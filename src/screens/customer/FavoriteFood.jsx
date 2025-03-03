@@ -1,50 +1,25 @@
 import { View, Text, TextInput, Image, TouchableOpacity, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React from 'react';
 
-const HomeScreen = () => {
+const FavoritFood = () => {
 
-  const [favoriteItems, setFavoriteItems] = useState([]); // Danh sách các sản phẩm đã thích
-
-  // Hàm toggle favorite (thích/bỏ thích)
-  const toggleFavorite = (itemName) => {
-    setFavoriteItems((prevFavorites) =>
-      prevFavorites.includes(itemName)
-        ? prevFavorites.filter((name) => name !== itemName) // Bỏ thích
-        : [...prevFavorites, itemName] // Thêm vào danh sách yêu thích
-    );
-  };
-
-  const renderItem = ({ item }) => {
-    const isFavorite = favoriteItems.includes(item.name); // Kiểm tra sản phẩm có được thích không
-
-    return (
-      <TouchableOpacity style={styles.productCard}>
-        <View style={styles.productCImage}>
-          <Image source={item.image} style={styles.productImage} />
-        </View>
-        <View style={styles.productText}>
-          <Text style={styles.productTitle}>{item.name}</Text>
-          <Text style={styles.productDescription}>{item.description}</Text>
-        </View>
-        <View style={styles.productFooter}>
-          <Text style={styles.rating}>⭐ {item.rating}</Text>
-
-          {/* Nút trái tim */}
-          <TouchableOpacity onPress={() => toggleFavorite(item.name)}>
-            <Ionicons
-              name={isFavorite ? "heart" : "heart-outline"}
-              size={20}
-              color={isFavorite ? "red" : "gray"}
-            />
-          </TouchableOpacity>
-
-          <Ionicons name="cart-outline" size={20} color="gray" />
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
+  const renderItem = ({ item }) => (
+    <TouchableOpacity style={styles.productCard}>
+      <View style={styles.productCImage}>
+        <Image source={item.image} style={styles.productImage} />
+      </View>
+      <View style={styles.productText}>
+        <Text style={styles.productTitle}>{item.name}</Text>
+        <Text style={styles.productDescription}>{item.description}</Text>
+      </View>
+      <View style={styles.productFooter}>
+        <Text style={styles.rating}>⭐ {item.rating}</Text> 
+        <Ionicons name="heart" size={20} color="gray" />
+        <Ionicons name="cart-outline" size={20} color="gray" />
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
@@ -86,7 +61,7 @@ const HomeScreen = () => {
 };
 
 const styles = {
-  container: { flex: 1, backgroundColor: 'white', padding: 16, marginTop: 50 },
+  container: { flex: 1, backgroundColor: 'white', padding: 16 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
   title: { fontSize: 24, fontWeight: 'bold', fontStyle: 'italic', color: '#333' },
   profileImage: { width: 40, height: 40, borderRadius: 20 },
@@ -129,4 +104,4 @@ const foodItems = [
   { name: 'Pizza', description: "Veggie Pizza", rating: 4.8, image: require('../../assets/Cheeseburger.png') }
 ];
 
-export default HomeScreen;
+export default FavoritFood;

@@ -6,9 +6,17 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../screens/customer/HomeScreen";
 import BookingScreen from "../screens/customer/BookingScreen";
 import { Badge } from "react-native-paper";
-import HistoryScreen from "../screens/customer/HistoryScreen";
-import NotificationScreen from "../screens/customer/NotificationScreen";
-import ProfileScreen from "../screens/customer/ProfileScreen";
+import ProfileCustomerScreen from "../screens/customer/ProfileCustomerScreen";
+import ProductDetailScreen from "../screens/customer/ProductDetailScreen";
+import CartProductScreen from "../screens/customer/CartProductScreen";
+import PaymentScreen from "../screens/customer/PaymentScreen";
+import PaymentSuccessScreen from "../screens/customer/PaymentSuccessScreen";
+import ForgotPasswordScreen from "../screens/user/ForgotPasswordScreen";
+import ResetPasswordScreen from "../screens/user/ResetPasswordScreen";
+import SignUpScreen from "../screens/user/SignUpScreen";
+import FavoritFood from "../screens/customer/FavoriteFood";
+import ChatScreen from "../screens/customer/ChatScreen";
+import OrderTrackingScreen from "../screens/customer/OrderTrackingScreen";
 const Tab = createBottomTabNavigator();
 
 const NavigationTab = () => {
@@ -16,7 +24,7 @@ const NavigationTab = () => {
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: "#fff",
+          backgroundColor: "#EADDFF",
         },
         tabBarInactiveTintColor: "gray",
         tabBarActiveTintColor: "#FF6347",
@@ -28,28 +36,53 @@ const NavigationTab = () => {
         options={{
           tabBarIcon: ({ color, size }) => (
             <>
-              <Ionicons name="home" size={size} color={color} />
+              <Ionicons name="home-outline" size={size} color={color} />
             </>
           ),
           headerShown: false,
         }}
       />
+      
       <Tab.Screen
-        name="Booking"
-        component={BookingScreen}
+        name="Giỏ hàng"
+        component={CartProductScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="book" size={size} color={color} />
+            <Ionicons name="cart-outline" size={size} color={color} />
           ),
         }}
       />
       <Tab.Screen
-        name="Thông báo"
-        component={NotificationScreen}
+        name="Chat"
+        component={ChatScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <>
-              <Ionicons name="notifications" size={size} color={color} />
+              <Ionicons  name="chatbubble-ellipses-outline" size={size} color={color} />
+              <Badge
+                style={{
+                  position: "absolute",
+                  top: -4,
+                  right: -4,
+                  backgroundColor: "red",
+                  fontSize: 12,
+                  paddingHorizontal: 6,
+                }}
+              >
+                3
+              </Badge>
+            </>
+          ),
+        }}
+      />
+
+<Tab.Screen
+        name="Thông Báo"
+        component={OrderTrackingScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <>
+              <Ionicons  name="notifications" size={size} color={color} />
               <Badge
                 style={{
                   position: "absolute",
@@ -67,8 +100,8 @@ const NavigationTab = () => {
         }}
       />
       <Tab.Screen
-        name="Tài khoản"
-        component={ProfileScreen}
+        name="Tài Khoản"
+        component={ProfileCustomerScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person-circle" size={size} color={color} />

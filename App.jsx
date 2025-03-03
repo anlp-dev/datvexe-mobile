@@ -5,12 +5,18 @@ import AppNavigator from "./src/navigation/AppNavigator";
 import Toast from "react-native-toast-message";
 
 const App = () => {
+ 
   return (
     <SafeAreaProvider>
+      {/* {showWelcome ? (
+        <Welcome /> // Hiển thị Welcome trong 10 giây
+      ) : (  */}
+    
       <NavigationContainer>
         <AppNavigator />
           <Toast/>
       </NavigationContainer>
+       {/* )} */}
     </SafeAreaProvider>
   );
 };

@@ -1,304 +1,100 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {PAYMENT_METHODS} from '../../enums/PaymentMethods'
-import PaymentService from "../../service/booking/PaymentService";
-import {showCustomToast} from "../../components/common/notifice/CustomToast";
-import {formatCurrency, formatTime} from "../../utils/format";
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, CheckBox } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-const PaymentScreen = ({navigation, route}) => {
-  const [selectedMethod, setSelectedMethod] = useState(null);
-  const [timeLeft, setTimeLeft] = useState(10 * 60);
-  const dataBooking = route.params.dataBooking;
-  const [urlVnPayQr, setUrlVnPayQr] = useState('');
+const PaymentScreen = () => {
+    const [selectedMethod, setSelectedMethod] = useState('credit');
+    const [saveCard, setSaveCard] = useState(false);
 
-  useEffect(() => {
-    if (timeLeft <= 0) return;
-
-    const interval = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [timeLeft]);
-
-  const minutes = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
-
-  const RadioButton = ({ selected }) => (
-      <View style={styles.radioContainer}>
-        {selected ? (
-            <View style={styles.radioButtonSelected}>
-              <View style={styles.radioButtonInner} />
+    return (
+        <ScrollView style={styles.container}>
+            {/* Header */}
+            <View style={styles.header}>
+                <TouchableOpacity>
+                    <Ionicons name="arrow-back" size={24} color="black" />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Order summary</Text>
+                <TouchableOpacity>
+                    <Ionicons name="search" size={24} color="black" />
+                </TouchableOpacity>
             </View>
-        ) : (
-            <View style={styles.radioButton} />
-        )}
-      </View>
-  );
 
-  const submitPayment = async () => {
-    try{
-      switch (selectedMethod){
-        case 1:
-          const dataReq = {
-            orderId: dataBooking?.code,
-            totalPrice: dataBooking?.totalPrice * 1000,
-            bankCode: "NCB",
-            orderInfo: "Thanh toan ve xe giuong nam ma" +  dataBooking?.code,
-            orderType: "Đặt vé xe khách"
-          }
-          const resData = await PaymentService.getUrlVnPayQrCode(dataReq);
-          setUrlVnPayQr(resData.data);
-          navigation.navigate("VnPayPayment", {urlVnPayQr: resData.data, dataBooking: dataBooking})
-          return;
-        case 2:
-          showCustomToast(selectedMethod, "info")
-          return;
-        case 3:
-          showCustomToast(selectedMethod, "info")
-          return;
-        case 4:
-          showCustomToast(selectedMethod, "info")
-          return;
-        default:
-          return
-      }
-    }catch (e) {
-
-    }
-  }
-
-  return (
-    <SafeAreaView style={styles.container}>
-      {/* Progress Indicator */}
-      <View style={styles.progressContainer}>
-        <View style={styles.progressLine}>
-          {[1, 2, 3, 4].map((item, index) => (
-            <React.Fragment key={item}>
-              <View style={styles.progressDot}>
-                <MaterialIcons name="check" size={16} color="#fff" />
-              </View>
-              {index < 3 && <View style={styles.progressBar} />}
-            </React.Fragment>
-          ))}
-        </View>
-      </View>
-
-      <Text style={styles.bookingTime}>Thời gian đặt vé còn: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}</Text>
-
-      {/* Payment Methods */}
-      <Text style={styles.sectionTitle}>Vui lòng chọn hình thức thanh toán</Text>
-      <ScrollView style={styles.methodsContainer}>
-        {PAYMENT_METHODS.map((method) => (
-          <TouchableOpacity
-            key={method.id}
-            style={styles.methodItem}
-            onPress={() => setSelectedMethod(method.id)}
-          >
-            <MaterialCommunityIcons name={method.icon} size={24} color="#666" />
-            <View style={styles.methodText}>
-              <Text style={styles.methodTitle}>{method.title}</Text>
-              <Text style={styles.methodSubtitle}>{method.subtitle}</Text>
+            {/* Order Summary */}
+            <View style={styles.summaryContainer}>
+                <View style={styles.summaryRow}>
+                    <Text style={styles.summaryText}>Order</Text>
+                    <Text style={styles.summaryText}>$16.48</Text>
+                </View>
+                <View style={styles.summaryRow}>
+                    <Text style={styles.summaryText}>Taxes</Text>
+                    <Text style={styles.summaryText}>$0.3</Text>
+                </View>
+                <View style={styles.summaryRow}>
+                    <Text style={styles.summaryText}>Delivery fees</Text>
+                    <Text style={styles.summaryText}>$1.5</Text>
+                </View>
+                <View style={styles.summaryRow}>
+                    <Text style={styles.totalText}>Total:</Text>
+                    <Text style={styles.totalAmount}>$18.19</Text>
+                </View>
+                <View style={styles.summaryRow}>
+                    <Text style={styles.deliveryTime}>Estimated delivery time:</Text>
+                    <Text style={styles.deliveryTime}>15 - 30mins</Text>
+                </View>
             </View>
-            <RadioButton selected={selectedMethod === method.id} />
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
 
-      {/* Booking Information */}
-      <View style={styles.bookingInfo}>
-        <Text style={styles.bookingTitle}>Thông tin đặt chỗ</Text>
-        <View style={styles.bookingRow}>
-          <Text style={styles.bookingLabel}>Booking #</Text>
-          <Text style={styles.bookingValue}>{dataBooking?.code}</Text>
-        </View>
-        <View style={styles.bookingRow}>
-          <Text style={styles.bookingLabel}>Tên tuyến</Text>
-          <Text style={styles.bookingValue}>{dataBooking?.busSchedule?.route}</Text>
-        </View>
-        <View style={styles.bookingRow}>
-          <Text style={styles.bookingLabel}>Giờ xuất bến</Text>
-          <Text style={styles.bookingValue}>{formatTime(dataBooking?.departureTime)}</Text>
-        </View>
-        <View style={styles.bookingRow}>
-          <Text style={styles.bookingLabel}>Đơn vị vận chuyển</Text>
-          <Text style={styles.bookingValue}>Sao Việt</Text>
-        </View>
-      </View>
+            {/* Payment Methods */}
+            <Text style={styles.paymentTitle}>Payment methods</Text>
+            <TouchableOpacity style={[styles.paymentMethod, selectedMethod === 'credit' && styles.selectedMethod]} onPress={() => setSelectedMethod('credit')}>
+                <Image source={require('../../assets/Mastercard-logo.svg')} style={styles.cardImage} />
+                <Text style={styles.cardText}>Credit card 5105 **** **** 0505</Text>
+                <Ionicons name={selectedMethod === 'credit' ? "radio-button-on" : "radio-button-off"} size={24} color="black" />
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.paymentMethod, selectedMethod === 'debit' && styles.selectedMethod]} onPress={() => setSelectedMethod('debit')}>
+                <Image source={require('../../assets/Visa-Logo.png')} style={styles.cardImage} />
+                <Text style={styles.cardText}>Debit card 3566 **** **** 0505</Text>
+                <Ionicons name={selectedMethod === 'debit' ? "radio-button-on" : "radio-button-off"} size={24} color="black" />
+            </TouchableOpacity>
 
-      {/* Total and Payment Button */}
-      <View style={styles.footer}>
-        <View style={styles.totalContainer}>
-          <Text style={styles.totalLabel}>Tổng</Text>
-          <Text style={styles.totalAmount}>{formatCurrency(dataBooking?.totalPrice)}</Text>
-        </View>
-        <TouchableOpacity 
-          style={[
-            styles.paymentButton,
-            !selectedMethod && styles.paymentButtonDisabled
-          ]}
-          disabled={!selectedMethod}
-          onPress={submitPayment}
-        >
-          <Text style={styles.paymentButtonText}>Thanh toán</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
-  );
+            {/* Save Card Checkbox */}
+            <View style={styles.checkboxContainer}>
+                <CheckBox value={saveCard} onValueChange={setSaveCard} />
+                <Text style={styles.checkboxText}>Save card details for future payments</Text>
+            </View>
+
+            {/* Footer */}
+            <View style={styles.footer}>
+                <Text style={styles.finalPrice}>Total price: <Text style={styles.totalPrice}>$18.19</Text></Text>
+                <TouchableOpacity style={styles.payButton}>
+                    <Text style={styles.payButtonText}>Pay Now</Text>
+                </TouchableOpacity>
+            </View>
+        </ScrollView>
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#FFB800',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginLeft: 16,
-    color: '#000',
-  },
-  progressContainer: {
-    padding: 16,
-  },
-  progressLine: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  progressDot: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#FFA07A',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  progressBar: {
-    flex: 1,
-    height: 2,
-    backgroundColor: '#FFB800',
-    marginHorizontal: 4,
-  },
-  bookingTime: {
-    textAlign: 'center',
-    marginVertical: 16,
-    color: '#666',
-  },
-  sectionTitle: {
-    padding: 16,
-    fontSize: 16,
-    color: '#333',
-  },
-  methodsContainer: {
-    flex: 1,
-  },
-  methodItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  methodText: {
-    flex: 1,
-    marginLeft: 16,
-  },
-  methodTitle: {
-    fontSize: 16,
-    color: '#333',
-  },
-  methodSubtitle: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 4,
-  },
-  radioContainer: {
-    marginLeft: 10,
-  },
-  radioButton: {
-    height: 20,
-    width: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: '#666',
-  },
-  radioButtonSelected: {
-    height: 20,
-    width: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: '#FFA07A',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  radioButtonInner: {
-    height: 10,
-    width: 10,
-    borderRadius: 5,
-    backgroundColor: '#FFA07A',
-  },
-  bookingInfo: {
-    padding: 16,
-    backgroundColor: '#f5f5f5',
-  },
-  bookingTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  bookingRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  bookingLabel: {
-    color: '#666',
-  },
-  bookingValue: {
-    color: '#333',
-  },
-  footer: {
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-  },
-  totalContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  totalLabel: {
-    fontSize: 16,
-    color: '#333',
-  },
-  totalAmount: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#ff8e5e',
-  },
-  paymentButton: {
-    backgroundColor: '#FFA07A',
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  paymentButtonDisabled: {
-    backgroundColor: '#ccc',
-  },
-  paymentButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
+    container: { flex: 1, backgroundColor: 'white', padding: 16 },
+    header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+    headerTitle: { fontSize: 18, fontWeight: 'bold' },
+    summaryContainer: { marginBottom: 20 },
+    summaryRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 },
+    summaryText: { fontSize: 16, color: '#666' },
+    priceText: { fontWeight: 'bold', flexDirection: 'row', justifyContent: 'space-between', },
+    totalText: { fontSize: 18, fontWeight: 'bold', marginTop: 10, flexDirection: 'row', justifyContent: 'space-between', },
+    totalPrice: { color: 'red' },
+    deliveryTime: { fontSize: 14, color: 'gray', marginTop: 5, flexDirection: 'row', justifyContent: 'space-between', },
+    paymentTitle: { fontSize: 18, fontWeight: 'bold', marginVertical: 10 },
+    paymentMethod: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f5f5f5', padding: 15, borderRadius: 10, marginBottom: 10 },
+    selectedMethod: { backgroundColor: '#ddd' },
+    cardImage: { width: 50, height: 30, marginRight: 10 },
+    cardText: { flex: 1, fontSize: 16 },
+    checkboxContainer: { flexDirection: 'row', alignItems: 'center', marginVertical: 10 },
+    checkboxText: { marginLeft: 8, fontSize: 14 },
+    footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 20 },
+    finalPrice: { fontSize: 18, fontWeight: 'bold' },
+    payButton: { backgroundColor: '#4A90E2', padding: 12, borderRadius: 10 },
+    payButtonText: { fontSize: 16, fontWeight: 'bold', color: 'white' }
 });
 
 export default PaymentScreen;
