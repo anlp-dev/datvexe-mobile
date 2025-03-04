@@ -45,7 +45,7 @@ const TripDetailScreen = ({route, navigation}) => {
                             <Text>Số ghế/suất/tầng</Text>
                             <View style={styles.seatsContainer}>
                                 {dataBooking.seats.map((item, index) => (
-                                    <View key={item._id} style={styles.seatLabel}>
+                                    <View key={index} style={styles.seatLabel}>
                                         <Text>{item}</Text>
                                     </View>
                                 ))}

@@ -14,8 +14,7 @@ import {SEAT_LAYOUT} from "../../enums/SeatLayout";
 import {formatCurrency} from "../../utils/format";
 import {showCustomToast} from "../../components/common/notifice/CustomToast";
 
-const SeatSelectionScreen = ({route}) => {
-    const navigation = useNavigation();
+const SeatSelectionScreen = ({route, navigation}) => {
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [currentFloor, setCurrentFloor] = useState(1);
     const [busType, setBusType] = useState('BUS20'); // Default value
@@ -31,7 +30,7 @@ const SeatSelectionScreen = ({route}) => {
     }, [route]);
 
 
-    // Calculate total price when selected seats change
+
     useEffect(() => {
         let price = 0;
         selectedSeats.forEach(seatId => {
@@ -74,7 +73,7 @@ const SeatSelectionScreen = ({route}) => {
     const renderSeat = (seat, status = 'available') => {
         const {id, price} = seat;
         const isSelected = selectedSeats.includes(id);
-        const isBooked = status === 'booked';
+        const isBooked = dataSchedule?.seatSelected?.includes(id);
         const isPending = status === 'pending';
 
         // BUS20 layout (numeric seats)

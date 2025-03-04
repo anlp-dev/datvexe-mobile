@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from "react";
 import {View, ActivityIndicator, StyleSheet, SafeAreaView, Text, Button, Alert} from "react-native";
 import {WebView} from "react-native-webview";
+import PaymentService from "../../../service/booking/PaymentService";
+import {showCustomToast} from "../../common/notifice/CustomToast";
 
 const VNPayPayment = ({navigation, route}) => {
     const [loading, setLoading] = useState(false);
@@ -26,7 +28,17 @@ const VNPayPayment = ({navigation, route}) => {
 
             if (responseCode === "00") {
                 setPaymentStatus(true)
-                navigation.replace("BookingSuccessScreen", {dataBooking: dataBooking})
+                const dataReq = {
+                    id: dataBooking._id,
+                    status: "payed",
+                    paymentMethod: "VNPay"
+                }
+                const resData = await PaymentService.updateStatusPayment(dataReq);
+                if(resData.status === 200) {
+                    navigation.replace("BookingSuccessScreen", {dataBooking: dataBooking})
+                }else{
+                    showCustomToast(resData.message);
+                }
             }
         }catch (e) {
            console.log(e.message);

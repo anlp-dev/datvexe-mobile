@@ -21,6 +21,7 @@ import EditProfile from "../screens/customer/DetailProfileScreen";
 import DetailProfileScreen from "../screens/customer/DetailProfileScreen";
 import TripDetailScreen from "../screens/customer/TripDetailScreen";
 import VNPayPayment from "../components/specific/booking/VNPayPayment";
+import VietQRPayment from "../components/specific/booking/VietQRPayment";
 
 const Stack = createStackNavigator();
 
@@ -47,12 +48,12 @@ const SCREEN_CONFIGS = [
     {
         name: "Login",
         component: LoginScreen,
-        options: {headerShown: false},
+        options: {headerShown: false, gestureEnabled: false},
     },
     {
         name: "MainTabs",
         component: NavigationTab,
-        options: {headerShown: false},
+        options: {headerShown: false, gestureEnabled: false},
     },
     {
         name: "HistoryTab",
@@ -77,7 +78,7 @@ const SCREEN_CONFIGS = [
     {
         name: "PaymentScreen",
         component: PaymentScreen,
-        options: getCommonHeaderOptions("Thanh toán"),
+        options: {...getCommonHeaderOptions("Thanh toán"), headerLeft: () => null, gestureEnabled: false},
     },
     {
         name: "BookingConfirmScreen",
@@ -100,6 +101,7 @@ const SCREEN_CONFIGS = [
         options: {
             ...getCommonHeaderOptions("Hoàn thành"),
             headerLeft: () => null,
+            gestureEnabled: false
         }
     },
     {
@@ -111,6 +113,11 @@ const SCREEN_CONFIGS = [
         name: "VnPayPayment",
         component: VNPayPayment,
         options: {headerShown: false}
+    },
+    {
+        name: "VietQRPayment",
+        component: VietQRPayment,
+        options: getCommonHeaderOptions("Quét mã để thanh toán")
     }
 ];
 
