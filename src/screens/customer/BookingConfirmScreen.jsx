@@ -1,14 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, TextInput, Switch, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView} from 'react-native';
 import {AntDesign, MaterialIcons, Ionicons} from '@expo/vector-icons';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {TYPE_BUS} from "../../enums/EnumsType";
 import TripService from "../../service/trip/TripService";
 import {showCustomToast} from "../../components/common/notifice/CustomToast";
 import AuthService from "../../service/AuthService";
 import {formatCurrency, formatCurrencyToNumber, formatDate, formatDateMonth} from "../../utils/format";
 
-const BookingConfirmScreen = ({route, navigation}) => {
+const BookingConfirmScreen = ({navigation}) => {
+    const route = useRoute();
     const [seatIdSelected, setSeatIdSelected] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
     const [busType, setBusType] = useState('');
@@ -34,7 +35,7 @@ const BookingConfirmScreen = ({route, navigation}) => {
     useEffect(() => {
         if (route && route.params && route.params.dataSchedule
             && route.params.selectedSeats && route.params.totalPrice && route.params.busType) {
-            setDataSchedule(route.params.dataSchedule[0])
+            setDataSchedule(route.params.dataSchedule)
             setSeatIdSelected(route.params.selectedSeats)
             setTotalPrice(route.params.totalPrice)
             setBusType(route.params.busType)
@@ -69,7 +70,7 @@ const BookingConfirmScreen = ({route, navigation}) => {
             }
             const resData = await TripService.themMoiBooking(dataReq);
             if(resData.status === 200){
-                navigation.navigate("PaymentScreen", {dataBooking: resData.data});
+                navigation.replace("PaymentScreen", {dataBooking: resData.data[0]});
             }else{
                 showCustomToast("Error", "error")
             }

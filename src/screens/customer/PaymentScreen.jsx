@@ -39,34 +39,47 @@ const PaymentScreen = ({navigation, route}) => {
   );
 
   const submitPayment = async () => {
+    let dataReq = {
+      orderId: dataBooking?.code,
+      totalPrice: dataBooking?.totalPrice * 1000,
+      bankCode: "",
+      orderInfo: "Thanh toan ve xe giuong nam ma " +  dataBooking?.code,
+      orderType: "Đặt vé xe khách"
+    }
     try{
       switch (selectedMethod){
         case 1:
-          const dataReq = {
-            orderId: dataBooking?.code,
-            totalPrice: dataBooking?.totalPrice * 1000,
-            bankCode: "NCB",
-            orderInfo: "Thanh toan ve xe giuong nam ma" +  dataBooking?.code,
-            orderType: "Đặt vé xe khách"
-          }
-          const resData = await PaymentService.getUrlVnPayQrCode(dataReq);
-          setUrlVnPayQr(resData.data);
-          navigation.navigate("VnPayPayment", {urlVnPayQr: resData.data, dataBooking: dataBooking})
+          dataReq.bankCode = "VNPayQR"
+          const resDataQR = await PaymentService.getUrlVnPayQrCode(dataReq);
+          setUrlVnPayQr(resDataQR.data);
+          navigation.navigate("VnPayPayment", {urlVnPayQr: resDataQR.data, dataBooking: dataBooking})
           return;
         case 2:
-          showCustomToast(selectedMethod, "info")
+          dataReq.bankCode = "NCB"
+          const resDataVNPay = await PaymentService.getUrlVnPayQrCode(dataReq);
+          setUrlVnPayQr(resDataVNPay.data);
+          navigation.navigate("VnPayPayment", {urlVnPayQr: resDataVNPay.data, dataBooking: dataBooking})
           return;
         case 3:
-          showCustomToast(selectedMethod, "info")
+          navigation.navigate("BookingSuccessScreen", {dataBooking: dataBooking})
           return;
         case 4:
-          showCustomToast(selectedMethod, "info")
+          const dataBanking = {
+            bankCode: "TCB",
+            bankName: "Techcombank",
+            bankNo: "78989899999999",
+            amount: dataBooking?.totalPrice * 1000,
+            description: "Thanh toan ve xe giuong nam ma " + dataBooking?.code,
+            accountName: "LUU PHUC AN"
+          }
+          const urlVietQr = `https://img.vietqr.io/image/${dataBanking.bankCode}-${dataBanking.bankNo}-compact2.png?amount=${dataBanking.amount}&addInfo=${encodeURIComponent(dataBanking.description)}`;
+          navigation.navigate("VietQRPayment", {urlVietQr: urlVietQr, dataBooking: dataBooking, dataBanking: dataBanking})
           return;
         default:
           return
       }
     }catch (e) {
-
+      showCustomToast(e.message, "error")
     }
   }
 

@@ -52,7 +52,7 @@ const CarScheduleScreen = ({navigation}) => {
   }, []);
 
   const renderScheduleItem = ({ item: schedule }) => (
-      <TouchableOpacity onPress={() => navigation.navigate("SeatSelectionScreen", {busType: schedule.busOperator.types.code, dataSchedule})}>
+      <TouchableOpacity onPress={() => navigation.navigate("SeatSelectionScreen", {busType: schedule.busOperator.types.code, dataSchedule: schedule})}>
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <View>

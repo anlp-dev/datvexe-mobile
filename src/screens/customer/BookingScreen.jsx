@@ -67,7 +67,7 @@ const BookingScreen = ({navigation}) => {
                 <View style={styles.ticket}>
                     <View style={styles.ticketHeader}>
                         <Text style={styles.ticketCode}>
-                            🎟 Ticket Code: {item.code}
+                            🎟 Mã vé: {item.code}
                         </Text>
                         <Text style={[styles.status, getStatusStyle(item.status)]}>
                             {getStatusText(item.status)}
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     ticket: {
         backgroundColor: "#fff",
         borderRadius: 10,
-        padding: 10,
+        padding: 15,
         width: 400,
         shadowColor: "#000",
         shadowOpacity: 0.1,

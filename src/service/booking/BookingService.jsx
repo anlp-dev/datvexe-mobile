@@ -22,7 +22,23 @@ const BookingService = {
         }
     },
     async getById(dataReq){
-
+        try{
+            const token = await checkToken();
+            if(token == null){
+                throw new Error("Đã hết phiên đăng nhập, vui lòng đăng nhập lại.")
+            }
+            const res = await fetch(`${ApiConfig.baseUrl}/booking/${dataReq}`, {
+                method: "GET",
+                headers: ApiConfig.getAuthHeaders(token)
+            });
+            const data = await res.json();
+            if(!res.ok){
+                throw new Error("Lỗi khi lấy dữ liệu!!")
+            }
+            return data;
+        }catch (e) {
+            throw new Error(e);
+        }
     },
 }
 

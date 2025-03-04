@@ -30,6 +30,6 @@ export const getStatusText = (status) => {
         case "drafted":
             return "Đã xóa"
         default:
-            return {color: "#000"};
+            return "Không xác định";
     }
 }
