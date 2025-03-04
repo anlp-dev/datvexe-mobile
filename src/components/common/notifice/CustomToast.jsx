@@ -22,12 +22,24 @@
 
 import Toast from 'react-native-toast-message';
 
+const getTitle = (type) => {
+    if(type === 'success') {
+        return '✔️ ';
+    }else if(type === 'error') {
+        return '❌ ';
+    }else if(type === 'info') {
+        return 'ℹ️ ';
+    }else{
+        return '';
+    }
+}
+
 export const showCustomToast = (message, type = 'success') => {
     Toast.show({
-        type: type, // 'success', 'error', 'info'
-        text1: message,
+        type: type,
+        text1: getTitle(type) + message,
         position: 'bottom',
-        visibilityTime: 4000, // 4 giây
+        visibilityTime: 4000,
         autoHide: true,
         topOffset: 50,
     });

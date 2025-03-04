@@ -1,13 +1,16 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, ScrollView, SafeAreaView, Platform, StatusBar, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, ScrollView, SafeAreaView, Platform, StatusBar, TouchableOpacity, Alert} from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import {formatCurrency, formatDate, formatTime} from "../../utils/format";
 import {getStatusStyle, getStatusText} from "../../utils/formatStatus";
 import {MaterialIcons} from "@expo/vector-icons";
+import CancellationActionSheet from "../../components/common/actionsheet/CancelActionSheet";
 
 const TripDetailScreen = ({route, navigation}) => {
     const idDataBooking = route.params.data;
     const [dataBooking, setDataBooking] = useState(route.params.data);
+    const [cancelModalVisible, setCancelModalVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (route && route.params && route.params.data) {
@@ -15,8 +18,36 @@ const TripDetailScreen = ({route, navigation}) => {
         }
     }, []);
 
-    console.log(dataBooking, 'data booking')
+    console.log(dataBooking, 'data booking');
 
+    const handleCancelTicket = (reason) => {
+        setLoading(true);
+
+        // Here you would implement your API call to cancel the booking
+        // Example:
+        // cancelBooking(dataBooking.id, reason.id)
+        //   .then(() => {
+        //     // Update booking status
+        //     setDataBooking({...dataBooking, status: 'cancelled'});
+        //     Alert.alert('Thành công', 'Vé đã được hủy thành công');
+        //   })
+        //   .catch((error) => {
+        //     Alert.alert('Lỗi', 'Không thể hủy vé. Vui lòng thử lại sau.');
+        //     console.error(error);
+        //   })
+        //   .finally(() => {
+        //     setLoading(false);
+        //     setCancelModalVisible(false);
+        //   });
+
+        // For demo purposes, we'll simulate an API call:
+        setTimeout(() => {
+            setDataBooking({...dataBooking, status: 'cancelled'});
+            Alert.alert('Thành công', `Vé đã được hủy với lý do: ${reason.reason}`);
+            setLoading(false);
+            setCancelModalVisible(false);
+        }, 1500);
+    };
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -104,24 +135,37 @@ const TripDetailScreen = ({route, navigation}) => {
                         </View>
                     </View>
 
-
-
                     <View style={styles.buttonContainer}>
                         {dataBooking.status === 'pending' ? (
-                            <TouchableOpacity style={styles.cancelButton} activeOpacity={0.7}>
-                                <MaterialIcons name="payment" size={20} color="#fff" style={styles.payIcon}/>
-                                <Text style={styles.payButtonText}>Hủy vé</Text>
+                            <TouchableOpacity
+                                style={styles.cancelButton}
+                                activeOpacity={0.7}
+                                onPress={() => setCancelModalVisible(true)}
+                                disabled={loading}
+                            >
+                                <MaterialIcons name="cancel" size={20} color="#fff" style={styles.payIcon}/>
+                                <Text style={styles.payButtonText}>
+                                    {loading ? 'Đang xử lý...' : 'Hủy vé'}
+                                </Text>
                             </TouchableOpacity>
-                        ) : ""}
+                        ) : null}
+
                         {dataBooking.status === 'pending' || dataBooking.status === 'completed' ? (
                             <TouchableOpacity style={styles.payButton} activeOpacity={0.7}>
                                 <MaterialIcons name="payment" size={20} color="#fff" style={styles.payIcon}/>
                                 <Text style={styles.payButtonText}>Thanh toán ngay</Text>
                             </TouchableOpacity>
-                        ) : ""}
+                        ) : null}
                     </View>
                 </ScrollView>
             </View>
+
+            {/* Cancellation ActionSheet */}
+            <CancellationActionSheet
+                visible={cancelModalVisible}
+                onClose={() => setCancelModalVisible(false)}
+                onConfirm={handleCancelTicket}
+            />
         </SafeAreaView>
     );
 };
