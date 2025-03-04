@@ -1,80 +1,33 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import {showCustomToast} from "../../components/common/notifice/CustomToast";
+import UserService from "../../service/user/UserService";
 
 const NotificationScreen = () => {
   const [activeTab, setActiveTab] = useState('promotions');
+  const [notifications, setNotifications] = useState([]);
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try{
+        const resData = await UserService.getNotifications();
+        if(resData.status === 200){
+          setNotifications(resData.data);
+        }
+      }catch (e) {
+        showCustomToast(e.message, 'error')
+      }
+    }
+    fetchData();
+  }, []);
 
   const tabs = [
     { id: 'promotions', label: 'Khuyến mãi' },
     { id: 'events', label: 'Sự kiện' },
   ];
 
-  const notifications = [
-    {
-      id: 1,
-      type: 'cancel',
-      title: 'Xác nhận huỷ vé',
-      message: 'Giữ chỗ số BD1J9D834K4 của bạn đã bị huỷ do quá 10 phút. Vui lòng liên hệ tổng đài 19006763 để được hỗ trợ...',
-      tab: 'events'
-    },
-    {
-      id: 2,
-      type: 'cancel',
-      title: 'Xác nhận huỷ vé',
-      message: 'Giữ chỗ số BD154X96DDR của bạn đã bị huỷ do quá 10 phút. Vui lòng liên hệ tổng đài 19006763 để được hỗ trợ...',
-      tab: 'events'
-    },
-    {
-      id: 3,
-      type: 'cancel',
-      title: 'Xác nhận huỷ vé',
-      message: 'Giữ chỗ số BD19W67GXMP của bạn đã bị huỷ do quá 10 phút. Vui lòng liên hệ tổng đài 19006763 để được hỗ trợ...',
-      tab: 'events'
-    },
-    {
-      id: 4,
-      type: 'cancel',
-      title: 'Xác nhận huỷ vé',
-      message: 'Giữ chỗ số BD1ELP53EP9 của bạn đã bị huỷ do quá 10 phút. Vui lòng liên hệ tổng đài 19006763 để được hỗ trợ...',
-      tab: 'events'
-    },
-    {
-      id: 5,
-      type: 'info',
-      title: 'Thông tin hoá đơn điện tử chuyến đi ngày 30/12/2024',
-      message: 'Quý khách vui lòng tra cứu hoá đơn điện tử tại trang web:',
-      tab: 'events'
-    },
-    {
-      id: 6,
-      type: 'points',
-      title: 'Tặng điểm cho vé: VG12R6BQ245RW',
-      message: 'Bạn đã được cộng 8.000 điểm. Phần vé đã được sử dụng điểm',
-      tab: 'promotions'
-    },
-    {
-      id: 7,
-      type: 'upcoming',
-      title: 'Sắp tới giờ khởi hành',
-      message: 'Chuyến đi của Quý khách sẽ khởi hành lúc 22:00 30/12. Xe 29F-02322 (SĐT 0988018989). Tại...',
-      tab: 'events'
-    },
-    {
-      id: 8,
-      type: 'upcoming',
-      title: 'Sắp tới giờ khởi hành',
-      message: 'Chuyến đi của Quý khách sẽ khởi hành lúc 22:00. Xe 29F-02322 (SĐT 0988018989). Tại...',
-      tab: 'events'
-    },
-    {
-      id: 9,
-      type: 'success',
-      title: 'Đặt xe thành công',
-      message: 'Chuyến đi của Quý khách đến hàng số BG1G7KRRP4N. Tuyến Mỹ Đình - Sơn La Khởi hành lúc 22:00 ngày 30-12-2024...',
-      tab: 'events'
-    },
-  ];
 
   const getIcon = (type) => {
     switch (type) {
@@ -137,7 +90,7 @@ const NotificationScreen = () => {
       {/* Notifications List */}
       <ScrollView style={styles.notificationsList}>
         {filteredNotifications.map((notification) => (
-          <View key={notification.id} style={styles.notificationItem}>
+          <View key={notification._id} style={styles.notificationItem}>
             <View style={styles.iconContainer}>
               <MaterialIcons
                 name={getIcon(notification.type)}
