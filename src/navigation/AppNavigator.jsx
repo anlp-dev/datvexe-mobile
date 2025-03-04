@@ -7,6 +7,7 @@ import {FontAwesome5} from "@expo/vector-icons";
 // Screens
 import NavigationTab from "./NavigationTab";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Welcome from "../screens/user/Welcome";
 
 
 const Stack = createStackNavigator();
@@ -31,6 +32,11 @@ const getCommonHeaderOptions = (title) => ({
 
 // Screen configurations
 const SCREEN_CONFIGS = [
+    {
+        name: "Welcome",
+        component: Welcome,
+        options: {headerShown: false},
+    },
     {
         name: "MainTabs",
         component: NavigationTab,
@@ -58,7 +64,7 @@ const AppNavigator = () => {
 
 
     return (
-        <Stack.Navigator initialRouteName="MainTabs">
+        <Stack.Navigator initialRouteName="Welcome">
             {SCREEN_CONFIGS.map(({name, component, options}) => (
                 <Stack.Screen
                     key={name}

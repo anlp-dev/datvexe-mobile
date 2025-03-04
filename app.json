@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "dat-ve-xe-sao-viet-travel",
-    "slug": "dat-ve-xe-sao-viet-travel",
+    "name": "Foodgo",
+    "slug": "Foodgo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/icons8-bus-100.png",
@@ -19,7 +19,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/icons8-bus-100.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.anonymous.Foodgo"
     },
     "web": {
       "favicon": "./src/assets/favicon.png"

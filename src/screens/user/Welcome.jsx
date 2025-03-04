@@ -1,15 +1,25 @@
 import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 
-const Welcome = () => {
+
+const Welcome = ({ navigation }) => {
+  const handleGuest = () => {
+    navigation.navigate('MainTabs');
+    // navigation.navigate('Home');
+    console.log('Navigate to Home Screen as Guest');
+  };
   return (
-    <View style={styles.container}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={handleGuest}
+    >
       <Text style={styles.title}>Foodgo</Text>
       <View style={styles.imageContainer}>
         <Image source={require("../../assets/hamburger.png")} style={styles.image1} />
         <Image source={require("../../assets/pizza.png")} style={styles.image2} />
       </View>
-    </View>
+
+    </TouchableOpacity>
   );
 };
 
@@ -44,9 +54,9 @@ const styles = StyleSheet.create({
     height: 237,
     zIndex: 12000,
     marginLeft: -85,
-    
-    
-    
+
+
+
   },
 });
 
