@@ -1,5 +1,5 @@
 const API_URL = "http://10.0.2.2:9999";
-const API_URL_IP = "http://54.206.126.69:9999";
+const API_URL_IP = "https://api.datvexe-manage.id.vn";
 const API = "http://localhost:9999"
 const API_URL_DEPLOY = "https://datvexe-backend.onrender.com"
 
