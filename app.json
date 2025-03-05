@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "ql-99billiard-mobile",
-    "slug": "ql-99billiard-mobile",
+    "name": "Sao Việt Travel",
+    "slug": "dat-ve-xe-sao-viet-travel",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./src/assets/icons8-bus-100.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./src/assets/icons8-bus-100.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,12 +17,17 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./src/assets/icons8-bus-100.png",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./src/assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "94108a2a-4059-40f5-a9d0-b5d8e7fa808d"
+      }
     }
   }
 }
