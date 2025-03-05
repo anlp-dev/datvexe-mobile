@@ -10,7 +10,7 @@ import {
   Animated,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient"; // Thêm import này từ expo-linear-gradient
-import RoleType from "../enums/RoleType";
+import {ROLE_TYPE} from "../enums/EnumsType";
 import {MESSAGE, SUCCESS, FAIL, ERROR} from "../enums/Message";
 import authService from "../service/AuthService";
 import {Button} from 'react-native-paper';
@@ -31,10 +31,10 @@ const LoginScreen = ({ navigation }) => {
       if(res_data.status === 200){
         const userData = await authService.getUser();
         const roleUser = userData?.data.roleId;
-        if(roleUser.code === RoleType.KHACH_HANG){
+        if(roleUser.code === ROLE_TYPE.KHACH_HANG){
           showCustomToast("Đăng nhập thành công !!!", "success")
           navigation.replace("MainTabs");
-        }else if(roleUser.code === RoleType.LAI_XE){
+        }else if(roleUser.code === ROLE_TYPE.LAI_XE){
           showCustomToast("Đăng nhập thành công !!!", "success")
           navigation.replace("DriverHomeScreen");
         }else{

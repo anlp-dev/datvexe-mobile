@@ -22,3 +22,8 @@ export const TYPE_BUS = [
   {code: "BUS34", name: "Luxury"},
   {code: "BUS20", name: "Royal"}
 ]
+
+export const ROLE_TYPE = {
+  KHACH_HANG: "GUEST_ROLE_MEMBER",
+  LAI_XE: "DRIVER_ROLE_MEMBER",
+}
