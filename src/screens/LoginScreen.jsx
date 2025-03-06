@@ -15,6 +15,7 @@ import {MESSAGE, SUCCESS, FAIL, ERROR} from "../enums/Message";
 import authService from "../service/AuthService";
 import {Button} from 'react-native-paper';
 import {showCustomToast} from "../components/common/notifice/CustomToast";
+import LoadingHelper from "../components/common/loading/LoadingScreen";
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -100,16 +101,15 @@ const LoginScreen = ({ navigation }) => {
       <Animated.View
         style={[styles.button, { transform: [{ scale: buttonScale }] }]}
       >
-        <Button
+        <TouchableOpacity
           style={styles.buttonTouchable}
           onPress={handleLogin}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
-          loading={isLoading}
           disabled={isLoading}
         >
           <Text style={styles.buttonText}>Đăng nhập</Text>
-        </Button>
+        </TouchableOpacity>
       </Animated.View>
 
       {/* Footer Links */}
@@ -119,6 +119,7 @@ const LoginScreen = ({ navigation }) => {
           <Text style={styles.footerLink}>Đăng ký</Text>
         </TouchableOpacity>
       </View>
+      <LoadingHelper visible={isLoading} colors={['#ffffff', '#f5f5f5', '#e0e0e0']}/>
     </LinearGradient>
   );
 };
