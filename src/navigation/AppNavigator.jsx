@@ -22,6 +22,7 @@ import DetailProfileScreen from "../screens/customer/DetailProfileScreen";
 import TripDetailScreen from "../screens/customer/TripDetailScreen";
 import VNPayPayment from "../components/specific/booking/VNPayPayment";
 import VietQRPayment from "../components/specific/booking/VietQRPayment";
+import PickUpLocationStorage from "../screens/customer/PickUpLocationStorage";
 
 const Stack = createStackNavigator();
 
@@ -118,6 +119,11 @@ const SCREEN_CONFIGS = [
         name: "VietQRPayment",
         component: VietQRPayment,
         options: getCommonHeaderOptions("Quét mã để thanh toán")
+    },
+    {
+        name: "PickUpLocationStorageScreen",
+        component: PickUpLocationStorage,
+        options: getCommonHeaderOptions("Chọn địa chỉ gửi hàng")
     }
 ];
 
@@ -136,7 +142,7 @@ const AppNavigator = () => {
             }
         }
         loadToken();
-    }, []);
+    }, [navigation]);
 
     const locationPickerOptions = {
         headerBackTitleStyle: "",

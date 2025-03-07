@@ -1,27 +1,31 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import {showCustomToast} from "../../components/common/notifice/CustomToast";
 import UserService from "../../service/user/UserService";
+import {useFocusEffect} from "@react-navigation/native";
 
-const NotificationScreen = () => {
+const NotificationScreen = ({navigation}) => {
   const [activeTab, setActiveTab] = useState('promotions');
   const [notifications, setNotifications] = useState([]);
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try{
-        const resData = await UserService.getNotifications();
-        if(resData.status === 200){
-          setNotifications(resData.data);
-        }
-      }catch (e) {
-        showCustomToast(e.message, 'error')
-      }
-    }
-    fetchData();
-  }, []);
+  useFocusEffect(
+      useCallback(() => {
+        const fetchData = async () => {
+          try {
+            console.log('Fetching notifications...');
+            const resData = await UserService.getNotifications();
+            if (resData.status === 200) {
+              setNotifications(resData.data);
+            }
+          } catch (e) {
+            showCustomToast(e.message, 'error');
+          }
+        };
+        fetchData();
+      }, [])
+  );
 
   const tabs = [
     { id: 'promotions', label: 'Khuyến mãi' },

@@ -6,7 +6,8 @@ const TripService = {
     loadDiaDiem: () => fetchWithAuth(`/trip/location/all`),
     loadSchedule: (dataReq) => fetchWithAuth(`/trip/schedule`, "POST", dataReq),
     loadScheduleById: (dataReq) => fetchWithAuth(`/trip/schedule/${dataReq}`),
-    themMoiBooking: (dataReq) => fetchWithAuth(`/trip/create`, "POST", dataReq)
+    themMoiBooking: (dataReq) => fetchWithAuth(`/trip/create`, "POST", dataReq),
+    huyBooking: (dataReq) => fetchWithAuth(`/trip/cancel`, "POST", dataReq),
 }
 
 export default TripService;
