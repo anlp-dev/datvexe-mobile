@@ -5,6 +5,8 @@ import {formatCurrency, formatDate, formatTime} from "../../utils/format";
 import {getStatusStyle, getStatusText} from "../../utils/formatStatus";
 import {MaterialIcons} from "@expo/vector-icons";
 import CancellationActionSheet from "../../components/common/actionsheet/CancelActionSheet";
+import {showCustomToast} from "../../components/common/notifice/CustomToast";
+import tripService from "../../service/trip/TripService";
 
 const TripDetailScreen = ({route, navigation}) => {
     const idDataBooking = route.params.data;
@@ -20,33 +22,26 @@ const TripDetailScreen = ({route, navigation}) => {
 
     console.log(dataBooking, 'data booking');
 
-    const handleCancelTicket = (reason) => {
+    const handleCancelTicket = async (reason) => {
         setLoading(true);
-
-        // Here you would implement your API call to cancel the booking
-        // Example:
-        // cancelBooking(dataBooking.id, reason.id)
-        //   .then(() => {
-        //     // Update booking status
-        //     setDataBooking({...dataBooking, status: 'cancelled'});
-        //     Alert.alert('Thành công', 'Vé đã được hủy thành công');
-        //   })
-        //   .catch((error) => {
-        //     Alert.alert('Lỗi', 'Không thể hủy vé. Vui lòng thử lại sau.');
-        //     console.error(error);
-        //   })
-        //   .finally(() => {
-        //     setLoading(false);
-        //     setCancelModalVisible(false);
-        //   });
-
-        // For demo purposes, we'll simulate an API call:
-        setTimeout(() => {
-            setDataBooking({...dataBooking, status: 'cancelled'});
-            Alert.alert('Thành công', `Vé đã được hủy với lý do: ${reason.reason}`);
+        try{
+            let dataReq = {
+                id: dataBooking._id,
+                reason: reason.reason
+            };
+            const res = await tripService.huyBooking(dataReq);
+            if(res.status === 200){
+                setDataBooking({...dataBooking, status: 'cancelled'});
+                Alert.alert('Thành công', `Vé đã được hủy với lý do: ${reason.reason}`);
+                setCancelModalVisible(false);
+            }else{
+                Alert.alert('Thất bại', 'Có lỗi xảy ra khi hủy vé, vui lòng thử lại sau');
+            }
+        }catch (e) {
+            showCustomToast(e.message, 'error');
+        }finally {
             setLoading(false);
-            setCancelModalVisible(false);
-        }, 1500);
+        }
     };
 
     return (

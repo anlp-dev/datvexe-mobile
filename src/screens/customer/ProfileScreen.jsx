@@ -47,11 +47,19 @@ const ProfileScreen = ({navigation}) => {
             setIsLoading(true);
             await AsyncStorage.removeItem("token");
             showCustomToast("Đăng xuất thành công!!!", "success");
+            if (navigation) {
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Login' }],
+                });
+            }
         }catch (e) {
             console.log(e.message);
         }finally {
             setIsLoading(false);
-            navigation.replace("Login");
+            if (navigation) {
+                navigation.replace("Login");
+            }
         }
     }
 

@@ -17,6 +17,8 @@ const TransportOptions = () => {
   const handleOpenLocationChoide = (e) => {
     if(CarType.XE_KHACH === e){
       navigation.navigate("LocationScreen")
+    }else if(CarType.HANG_HOA === e){
+        navigation.navigate("PickUpLocationStorageScreen")
     }else{
       Alert.alert("Mục này đang trong quá trình phát triển, vui lòng quay lại sau !!!")
     }

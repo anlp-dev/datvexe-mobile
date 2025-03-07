@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   View,
   Text,
@@ -16,6 +16,8 @@ import authService from "../service/AuthService";
 import {Button} from 'react-native-paper';
 import {showCustomToast} from "../components/common/notifice/CustomToast";
 import LoadingHelper from "../components/common/loading/LoadingScreen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {jwtDecode} from "jwt-decode";
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -23,6 +25,24 @@ const LoginScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const buttonScale = new Animated.Value(1); // For scaling animation
+
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        if (token) {
+          const currentTime = Math.floor(Date.now() / 1000);
+          if(jwtDecode(token).exp > currentTime) {
+            await AsyncStorage.removeItem("token");
+            navigation.replace("MainTabs");
+          }
+        }
+      } catch (error) {
+        console.error("Error checking token:", error);
+      }
+    };
+    checkToken();
+  }, [navigation]);
 
   const handleLogin = async () => {
     try{

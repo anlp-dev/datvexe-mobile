@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {
     View,
     Text,
@@ -7,7 +7,7 @@ import {
     StyleSheet,
     Alert,
 } from "react-native";
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {FontAwesome5} from "@expo/vector-icons";
 import Tab from "../../components/specific/booking/Tab";
 import {showCustomToast} from "../../components/common/notifice/CustomToast";
@@ -23,27 +23,28 @@ const BookingScreen = ({navigation}) => {
     const [tab, setTab] = useState("bookings"); // 'bookings' | 'history'
     const [dataBooking, setDataBooking] = useState([]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const token = await AsyncStorage.getItem("token");
-                if (!token) {
-                    throw new Error("Lỗi khi lấy token");
+    useFocusEffect(
+        useCallback(() => {
+            const fetchData = async () => {
+                try {
+                    const token = await AsyncStorage.getItem("token");
+                    if (!token) {
+                        throw new Error("Lỗi khi lấy token");
+                    }
+                    const tokenDecode = jwtDecode(token);
+                    const resData = await BookingService.getByUser(tokenDecode.userId);
+                    if (resData.status === 200) {
+                        setDataBooking(resData.data)
+                    } else {
+                        showCustomToast("Error", "error");
+                    }
+                } catch (e) {
+                    showCustomToast(e.message)
                 }
-                const tokenDecode = jwtDecode(token);
-                const resData = await BookingService.getByUser(tokenDecode.userId);
-                if (resData.status === 200) {
-                    setDataBooking(resData.data)
-                } else {
-                    showCustomToast("Error", "error");
-                }
-            } catch (e) {
-                showCustomToast(e.message)
             }
-        }
-        fetchData()
-    }, []);
-
+            fetchData()
+        }, [])
+    )
 
     const handlePayment = (item) => {
         try {
