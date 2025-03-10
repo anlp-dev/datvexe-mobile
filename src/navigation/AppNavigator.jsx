@@ -23,6 +23,9 @@ import TripDetailScreen from "../screens/customer/TripDetailScreen";
 import VNPayPayment from "../components/specific/booking/VNPayPayment";
 import VietQRPayment from "../components/specific/booking/VietQRPayment";
 import PickUpLocationStorage from "../screens/customer/PickUpLocationStorage";
+import SettingsScreen from "../screens/customer/SettingsScreen";
+import NewsScreen from "../screens/customer/NewsScreen";
+import NewsDetailScreen from "../screens/customer/NewsDetailScreen";
 
 const Stack = createStackNavigator();
 
@@ -95,6 +98,21 @@ const SCREEN_CONFIGS = [
         name: "EditProfileScreen",
         component: EditProfile,
         options: getCommonHeaderOptions("Thông tin cá nhân")
+    },
+    {
+        name: "SettingsScreen",
+        component: SettingsScreen,
+        options: getCommonHeaderOptions("Cài đặt")
+    },
+    {
+        name: "NewsScreen",
+        component: NewsScreen,
+        options: getCommonHeaderOptions("Tin tức")
+    },
+    {
+        name: "NewsDetailScreen",
+        component: NewsDetailScreen,
+        options: getCommonHeaderOptions("Chi tiết tin tức")
     },
     {
         name: "BookingSuccessScreen",

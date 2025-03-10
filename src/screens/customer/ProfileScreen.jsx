@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import {
     View,
     Text,
@@ -8,6 +8,9 @@ import {
     SafeAreaView,
     StatusBar,
     ScrollView,
+    Linking,
+    Alert,
+    Share
 } from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
 import {LinearGradient} from "expo-linear-gradient";
@@ -15,10 +18,16 @@ import authService from "../../service/AuthService";
 import {showCustomToast} from "../../components/common/notifice/CustomToast";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {Button} from 'react-native-paper';
+import ProfileEditActionSheet from "../../components/specific/profile/ProfileEditActionSheet";
 
 const ProfileScreen = ({navigation}) => {
     const [userData, setUserData] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+    const profileActionSheetRef = useRef(null);
+    const aboutActionSheetRef = useRef(null);
+    const supportActionSheetRef = useRef(null);
+    const settingsActionSheetRef = useRef(null);
+    const pointsActionSheetRef = useRef(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -39,28 +48,157 @@ const ProfileScreen = ({navigation}) => {
 
 
     const handleOpenDetailProfile = () => {
-        
+        navigation.navigate("EditProfileScreen");
+    }
+
+    const handleOpenEditProfile = () => {
+        profileActionSheetRef.current?.show();
+    }
+
+    const handleUpdateProfileSuccess = (updatedData) => {
+        setUserData(prev => ({
+            ...prev,
+            ...updatedData
+        }));
+    }
+
+    const handleOpenAboutInfo = () => {
+        Alert.alert(
+            "Thông tin Sao Việt",
+            "Sao Việt là ứng dụng đặt vé xe khách hàng đầu Việt Nam, cung cấp dịch vụ đặt vé xe khách trực tuyến thuận tiện, nhanh chóng và an toàn.\n\nPhiên bản: 1.0.0\nLiên hệ: support@saoviet.vn",
+            [
+                { text: "Đóng", style: "cancel" },
+                { 
+                    text: "Truy cập website", 
+                    onPress: () => Linking.openURL("https://saoviet.vn") 
+                }
+            ]
+        );
+    }
+
+    const handleOpenSupport = () => {
+        Alert.alert(
+            "Hỗ trợ khách hàng",
+            "Bạn cần hỗ trợ? Vui lòng chọn một trong các phương thức liên hệ dưới đây:",
+            [
+                { text: "Đóng", style: "cancel" },
+                { 
+                    text: "Gọi hotline", 
+                    onPress: () => Linking.openURL("tel:1900123456") 
+                },
+                { 
+                    text: "Gửi email", 
+                    onPress: () => Linking.openURL("mailto:support@saoviet.vn") 
+                },
+                { 
+                    text: "Chat trực tuyến", 
+                    onPress: () => navigation.navigate("ChatSupport") 
+                }
+            ]
+        );
+    }
+
+    const handleOpenSettings = () => {
+        navigation.navigate("SettingsScreen");
     }
 
     const handleLogOutProfile = async () => {
-        try{
-            setIsLoading(true);
-            await AsyncStorage.removeItem("token");
-            showCustomToast("Đăng xuất thành công!!!", "success");
-            if (navigation) {
-                navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'Login' }],
-                });
-            }
-        }catch (e) {
-            console.log(e.message);
-        }finally {
-            setIsLoading(false);
-            if (navigation) {
-                navigation.replace("Login");
-            }
+        Alert.alert(
+            "Đăng xuất",
+            "Bạn có chắc chắn muốn đăng xuất khỏi tài khoản?",
+            [
+                { text: "Hủy", style: "cancel" },
+                { 
+                    text: "Đăng xuất", 
+                    style: "destructive",
+                    onPress: async () => {
+                        try{
+                            setIsLoading(true);
+                            await AsyncStorage.removeItem("token");
+                            showCustomToast("Đăng xuất thành công!!!", "success");
+                            if (navigation) {
+                                navigation.reset({
+                                    index: 0,
+                                    routes: [{ name: 'Login' }],
+                                });
+                            }
+                        }catch (e) {
+                            console.log(e.message);
+                        }finally {
+                            setIsLoading(false);
+                            if (navigation) {
+                                navigation.replace("Login");
+                            }
+                        }
+                    }
+                }
+            ]
+        );
+    }
+
+    // Hàm xử lý cho Quick Access Grid
+    const handleOpenDiamondPoints = () => {
+        Alert.alert(
+            "Kim cương của bạn",
+            "Bạn hiện có 151.250 điểm kim cương.\n\nKim cương được tích lũy khi bạn đặt vé và có thể dùng để đổi các ưu đãi hấp dẫn.",
+            [
+                { text: "Đóng", style: "cancel" },
+                { 
+                    text: "Xem ưu đãi", 
+                    onPress: () => navigation.navigate("PromotionsScreen") 
+                }
+            ]
+        );
+    }
+
+    const handleOpenPromotions = () => {
+        Alert.alert(
+            "Khuyến mãi",
+            "Hiện tại bạn không có mã khuyến mãi nào.\n\nHãy đặt vé thường xuyên để nhận được các mã khuyến mãi hấp dẫn!",
+            [
+                { text: "Đóng", style: "cancel" },
+                { 
+                    text: "Tìm vé", 
+                    onPress: () => navigation.navigate("LocationScreen") 
+                }
+            ]
+        );
+    }
+
+    const handleOpenReferral = () => {
+        const referralCode = "SV" + userData.phone?.substring(userData.phone.length - 6) || "SV123456";
+        
+        Alert.alert(
+            "Giới thiệu bạn bè",
+            `Mã giới thiệu của bạn: ${referralCode}\n\nMỗi khi bạn bè đăng ký và nhập mã này, cả hai sẽ nhận được 10.000 điểm kim cương!`,
+            [
+                { text: "Đóng", style: "cancel" },
+                { 
+                    text: "Sao chép mã", 
+                    onPress: () => {
+                        showCustomToast("Đã sao chép mã giới thiệu!", "success");
+                    }
+                },
+                { 
+                    text: "Chia sẻ", 
+                    onPress: () => handleShareReferral(referralCode) 
+                }
+            ]
+        );
+    }
+
+    const handleShareReferral = async (referralCode) => {
+        try {
+            await Share.share({
+                message: `Hãy dùng mã giới thiệu ${referralCode} của tôi để đăng ký ứng dụng Sao Việt và cả hai chúng ta sẽ nhận được 10.000 điểm kim cương! Tải ứng dụng tại: https://saoviet.vn/app`,
+            });
+        } catch (error) {
+            showCustomToast("Không thể chia sẻ mã giới thiệu", "error");
         }
+    }
+
+    const handleOpenNews = () => {
+        navigation.navigate("NewsScreen");
     }
 
 
@@ -71,15 +209,43 @@ const ProfileScreen = ({navigation}) => {
     };
 
     const menuItems = [
-        {id: "info", title: "Thông tin Sao Việt", icon: "info", color: "#4A90E2", clickBtn: () => {}, loadingBtn: false},
-        {id: "support", title: "Hỗ trợ", icon: "help", color: "#50E3C2", clickBtn: () => {}, loadingBtn: false},
-        {id: "settings", title: "Cài đặt", icon: "settings", color: "#F5A623", clickBtn: () => {}, loadingBtn: false},
-        {id: "logout", title: "Đăng xuất", icon: "logout", color: "#FF5B5B", clickBtn: () => handleLogOutProfile(), loadingBtn: isLoading},
+        {
+            id: "info", 
+            title: "Thông tin Sao Việt", 
+            icon: "info", 
+            color: "#4A90E2", 
+            clickBtn: handleOpenAboutInfo, 
+            loadingBtn: false
+        },
+        {
+            id: "support", 
+            title: "Hỗ trợ", 
+            icon: "help", 
+            color: "#50E3C2", 
+            clickBtn: handleOpenSupport, 
+            loadingBtn: false
+        },
+        {
+            id: "settings", 
+            title: "Cài đặt", 
+            icon: "settings", 
+            color: "#F5A623", 
+            clickBtn: handleOpenSettings, 
+            loadingBtn: false
+        },
+        {
+            id: "logout", 
+            title: "Đăng xuất", 
+            icon: "logout", 
+            color: "#FF5B5B", 
+            clickBtn: handleLogOutProfile, 
+            loadingBtn: isLoading
+        },
     ];
 
-
-    const QuickAccessItem = ({icon, title, value, color}) => (
-        <TouchableOpacity style={styles.quickAccessItem}>
+    // Cập nhật QuickAccessItem để nhận onPress
+    const QuickAccessItem = ({icon, title, value, color, onPress}) => (
+        <TouchableOpacity style={styles.quickAccessItem} onPress={onPress}>
             <LinearGradient
                 colors={[color, color + "80"]}
                 style={styles.quickAccessIconContainer}
@@ -97,7 +263,7 @@ const ProfileScreen = ({navigation}) => {
             <ScrollView>
                 {/* User Profile Section */}
                 <View style={styles.profileContainer}>
-                    <TouchableOpacity style={styles.profileSection} onPress={() => navigation.navigate("EditProfileScreen")}>
+                    <TouchableOpacity style={styles.profileSection} onPress={handleOpenEditProfile}>
                         <View style={styles.profileLeft}>
                             <View style={styles.avatarContainer}>
                                 <MaterialIcons
@@ -111,7 +277,7 @@ const ProfileScreen = ({navigation}) => {
                                 <Text style={styles.userPhone}>{userData.phone}</Text>
                             </View>
                         </View>
-                        <MaterialIcons name="chevron-right" size={24} color="#4A90E2"/>
+                        <MaterialIcons name="edit" size={24} color="#4A90E2"/>
                     </TouchableOpacity>
                 </View>
 
@@ -123,18 +289,21 @@ const ProfileScreen = ({navigation}) => {
                             title="Kim cương"
                             value={userInfo.points}
                             color="#FFB236"
+                            onPress={handleOpenDiamondPoints}
                         />
                         <QuickAccessItem
                             icon={<MaterialIcons name="local-offer" size={24} color="#FFF"/>}
                             title="Khuyến mãi"
                             value="0 mã"
                             color="#FF5B5B"
+                            onPress={handleOpenPromotions}
                         />
                         <QuickAccessItem
                             icon={<MaterialIcons name="group" size={24} color="#FFF"/>}
                             title="Giới thiệu"
                             value="Bạn bè"
                             color="#4A90E2"
+                            onPress={handleOpenReferral}
                         />
                         <QuickAccessItem
                             icon={
@@ -143,6 +312,7 @@ const ProfileScreen = ({navigation}) => {
                             title="Tin tức"
                             value="Sao Việt"
                             color="#50E3C2"
+                            onPress={handleOpenNews}
                         />
                     </View>
                 </View>
@@ -171,6 +341,13 @@ const ProfileScreen = ({navigation}) => {
                     ))}
                 </View>
             </ScrollView>
+
+            {/* Profile Edit Action Sheet */}
+            <ProfileEditActionSheet 
+                actionSheetRef={profileActionSheetRef}
+                userData={userData}
+                onUpdateSuccess={handleUpdateProfileSuccess}
+            />
         </SafeAreaView>
     );
 };
