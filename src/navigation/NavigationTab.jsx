@@ -60,7 +60,7 @@ const NavigationTab = () => {
                   paddingHorizontal: 6,
                 }}
               >
-                3
+                99+
               </Badge>
             </>
           ),
