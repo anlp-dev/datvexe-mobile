@@ -29,6 +29,9 @@ import NewsDetailScreen from "../screens/customer/NewsDetailScreen";
 // Ticket Inspector Screens
 import TicketInspectorHomeScreen from "../screens/ticketOffice/TicketInspectorHomeScreen";
 import TicketInspectorTripDetailScreen from "../screens/ticketOffice/TicketInspectorTripDetailScreen";
+// New screens
+import RouteDescriptionScreen from "../screens/customer/RouteDescriptionScreen";
+import VehicleInfoScreen from "../screens/customer/VehicleInfoScreen";
 
 const Stack = createStackNavigator();
 
@@ -150,6 +153,17 @@ const SCREEN_CONFIGS = [
         component: PickUpLocationStorage,
         options: getCommonHeaderOptions("Chọn địa chỉ gửi hàng")
     },
+    // New screens
+    {
+        name: "RouteDescriptionScreen",
+        component: RouteDescriptionScreen,
+        options: getCommonHeaderOptions("Lộ trình chuyến xe")
+    },
+    {
+        name: "VehicleInfoScreen",
+        component: VehicleInfoScreen,
+        options: getCommonHeaderOptions("Thông tin xe")
+    },
     // Ticket Inspector Screens
     {
         name: "TicketInspectorHomeScreen",
@@ -160,7 +174,7 @@ const SCREEN_CONFIGS = [
         name: "TicketInspectorTripDetail",
         component: TicketInspectorTripDetailScreen,
         options: getCommonHeaderOptions("Chi tiết chuyến xe"),
-    },
+    }
 ];
 
 const AppNavigator = () => {

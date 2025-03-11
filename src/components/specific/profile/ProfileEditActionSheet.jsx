@@ -71,7 +71,6 @@ const ProfileEditActionSheet = ({ actionSheetRef, userData, onUpdateSuccess }) =
                 style={{ width: '100%' }}
             >
                 <View style={styles.headerContainer}>
-                    <View style={styles.indicator} />
                     <Text style={styles.actionSheetTitle}>Chỉnh sửa thông tin cá nhân</Text>
                     <Text style={styles.actionSheetSubtitle}>Cập nhật thông tin cá nhân của bạn</Text>
                 </View>
