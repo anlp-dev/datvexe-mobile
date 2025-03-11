@@ -26,6 +26,9 @@ import PickUpLocationStorage from "../screens/customer/PickUpLocationStorage";
 import SettingsScreen from "../screens/customer/SettingsScreen";
 import NewsScreen from "../screens/customer/NewsScreen";
 import NewsDetailScreen from "../screens/customer/NewsDetailScreen";
+// Ticket Inspector Screens
+import TicketInspectorHomeScreen from "../screens/ticketOffice/TicketInspectorHomeScreen";
+import TicketInspectorTripDetailScreen from "../screens/ticketOffice/TicketInspectorTripDetailScreen";
 
 const Stack = createStackNavigator();
 
@@ -34,10 +37,14 @@ const HEADER_STYLE = {
     backgroundColor: "#FFA07A",
 };
 
+const TICKET_INSPECTOR_HEADER_STYLE = {
+    backgroundColor: "#4CAF50",
+};
+
 const HEADER_TINT_COLOR = "#fff";
 
 // Common header options
-const getCommonHeaderOptions = (title) => ({
+const getCommonHeaderOptions = (title, isTicketInspector = false) => ({
     headerBackTitle: title === "Hoàn thành" ? null : " Quay lại",
     headerBackImage: () => (
         <FontAwesome5 name="chevron-left" size={16} color={HEADER_TINT_COLOR}/>
@@ -142,7 +149,18 @@ const SCREEN_CONFIGS = [
         name: "PickUpLocationStorageScreen",
         component: PickUpLocationStorage,
         options: getCommonHeaderOptions("Chọn địa chỉ gửi hàng")
-    }
+    },
+    // Ticket Inspector Screens
+    {
+        name: "TicketInspectorHomeScreen",
+        component: TicketInspectorHomeScreen,
+        options: {headerShown: false},
+    },
+    {
+        name: "TicketInspectorTripDetail",
+        component: TicketInspectorTripDetailScreen,
+        options: getCommonHeaderOptions("Chi tiết chuyến xe"),
+    },
 ];
 
 const AppNavigator = () => {

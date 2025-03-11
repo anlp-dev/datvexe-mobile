@@ -98,6 +98,7 @@ const LoginScreen = ({ navigation }) => {
           navigation.replace("DriverHomeScreen");
         }else if(roleUser.code === ROLE_TYPE.NHAN_VIEN){
           showCustomToast("Đăng nhập thành công !!!", "success")
+          navigation.replace("TicketInspectorHomeScreen");
         }
         else{
           showCustomToast(FAIL.LOGIN_FAIL, "error");
