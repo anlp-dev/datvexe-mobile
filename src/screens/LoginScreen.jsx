@@ -46,8 +46,15 @@ const LoginScreen = ({ navigation }) => {
         if (token) {
           const currentTime = Math.floor(Date.now() / 1000);
           if(jwtDecode(token).exp > currentTime) {
-            await AsyncStorage.removeItem("token");
-            navigation.replace("MainTabs");
+            if(jwtDecode(token).role === ROLE_TYPE.KHACH_HANG){
+                navigation.replace("MainTabs");
+            }else if(jwtDecode(token).role === ROLE_TYPE.LAI_XE){
+                navigation.replace("DriverHomeScreen");
+            }else if(jwtDecode(token).role === ROLE_TYPE.NHAN_VIEN) {
+                navigation.replace("TicketInspectorHomeScreen")
+            }else{
+                showCustomToast(FAIL.LOGIN_FAIL, "error");
+            }
           }
         }
       } catch (error) {
@@ -98,6 +105,7 @@ const LoginScreen = ({ navigation }) => {
           navigation.replace("DriverHomeScreen");
         }else if(roleUser.code === ROLE_TYPE.NHAN_VIEN){
           showCustomToast("Đăng nhập thành công !!!", "success")
+          navigation.replace("TicketInspectorHomeScreen");
         }
         else{
           showCustomToast(FAIL.LOGIN_FAIL, "error");

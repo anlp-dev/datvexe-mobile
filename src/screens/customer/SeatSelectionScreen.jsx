@@ -239,11 +239,17 @@ const SeatSelectionScreen = ({route, navigation}) => {
 
             {/* Bottom Navigation */}
             <View style={styles.bottomNav}>
-                <TouchableOpacity style={styles.navButton}>
+                <TouchableOpacity 
+                    style={styles.navButton}
+                    onPress={() => navigation.navigate('RouteDescriptionScreen', { dataSchedule })}
+                >
                     <Icon name="map-outline" size={24} color="#666"/>
                     <Text style={styles.navText}>Lộ trình</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.navButton}>
+                <TouchableOpacity 
+                    style={styles.navButton}
+                    onPress={() => navigation.navigate('VehicleInfoScreen', { busType, dataSchedule })}
+                >
                     <Icon name="information-circle-outline" size={24} color="#666"/>
                     <Text style={styles.navText}>Thông tin xe</Text>
                 </TouchableOpacity>
