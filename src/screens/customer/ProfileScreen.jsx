@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from "react";
+import React, {useEffect, useState, useRef, useCallback} from "react";
 import {
     View,
     Text,
@@ -19,6 +19,8 @@ import {showCustomToast} from "../../components/common/notifice/CustomToast";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {Button} from 'react-native-paper';
 import ProfileEditActionSheet from "../../components/specific/profile/ProfileEditActionSheet";
+import BookingService from "../../service/booking/BookingService";
+import {useFocusEffect} from "@react-navigation/native";
 
 const ProfileScreen = ({navigation}) => {
     const [userData, setUserData] = useState({});
@@ -28,27 +30,36 @@ const ProfileScreen = ({navigation}) => {
     const supportActionSheetRef = useRef(null);
     const settingsActionSheetRef = useRef(null);
     const pointsActionSheetRef = useRef(null);
+    const [discount, setDiscount] = useState([]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const res_data = await authService.getUser();
-                if (res_data) {
-                    setUserData(res_data.data);
-                    showCustomToast("Lấy thông tin người dùng thành công !", "success");
-                } else {
-                    showCustomToast("Lấy thông tin người dùng thất bại !", "error");
+    useFocusEffect(
+        useCallback(() => {
+            const fetchData = async () => {
+                try {
+                    const res_data = await authService.getUser();
+                    if (res_data) {
+                        setUserData(res_data.data);
+                        fetchDataDiscount();
+                    } else {
+                        showCustomToast("Lấy thông tin người dùng thất bại !", "error");
+                    }
+                } catch (e) {
+                    showCustomToast(e.message, "error");
                 }
-            } catch (e) {
-                showCustomToast(e.message, "error");
             }
+            fetchData();
+        }, [])
+    )
+
+    const fetchDataDiscount = async () => {
+        try {
+            const res_discount = await BookingService.getDiscount();
+            if (res_discount.status === 200) {
+                setDiscount(res_discount.data);
+            }
+        } catch (e) {
+            console.log(e)
         }
-        fetchData();
-    }, []);
-
-
-    const handleOpenDetailProfile = () => {
-        navigation.navigate("EditProfileScreen");
     }
 
     const handleOpenEditProfile = () => {
@@ -67,10 +78,10 @@ const ProfileScreen = ({navigation}) => {
             "Thông tin Sao Việt",
             "Sao Việt là ứng dụng đặt vé xe khách hàng đầu Việt Nam, cung cấp dịch vụ đặt vé xe khách trực tuyến thuận tiện, nhanh chóng và an toàn.\n\nPhiên bản: 1.0.0\nLiên hệ: support@saoviet.vn",
             [
-                { text: "Đóng", style: "cancel" },
-                { 
-                    text: "Truy cập website", 
-                    onPress: () => Linking.openURL("https://saoviet.vn") 
+                {text: "Đóng", style: "cancel"},
+                {
+                    text: "Truy cập website",
+                    onPress: () => Linking.openURL("https://saoviet.vn")
                 }
             ]
         );
@@ -81,18 +92,18 @@ const ProfileScreen = ({navigation}) => {
             "Hỗ trợ khách hàng",
             "Bạn cần hỗ trợ? Vui lòng chọn một trong các phương thức liên hệ dưới đây:",
             [
-                { text: "Đóng", style: "cancel" },
-                { 
-                    text: "Gọi hotline", 
-                    onPress: () => Linking.openURL("tel:1900123456") 
+                {text: "Đóng", style: "cancel"},
+                {
+                    text: "Gọi hotline",
+                    onPress: () => Linking.openURL("tel:1900123456")
                 },
-                { 
-                    text: "Gửi email", 
-                    onPress: () => Linking.openURL("mailto:support@saoviet.vn") 
+                {
+                    text: "Gửi email",
+                    onPress: () => Linking.openURL("mailto:support@saoviet.vn")
                 },
-                { 
-                    text: "Chat trực tuyến", 
-                    onPress: () => navigation.navigate("ChatSupport") 
+                {
+                    text: "Chat trực tuyến",
+                    onPress: () => navigation.navigate("ChatSupport")
                 }
             ]
         );
@@ -107,24 +118,24 @@ const ProfileScreen = ({navigation}) => {
             "Đăng xuất",
             "Bạn có chắc chắn muốn đăng xuất khỏi tài khoản?",
             [
-                { text: "Hủy", style: "cancel" },
-                { 
-                    text: "Đăng xuất", 
+                {text: "Hủy", style: "cancel"},
+                {
+                    text: "Đăng xuất",
                     style: "destructive",
                     onPress: async () => {
-                        try{
+                        try {
                             setIsLoading(true);
                             await AsyncStorage.removeItem("token");
                             showCustomToast("Đăng xuất thành công!!!", "success");
                             if (navigation) {
                                 navigation.reset({
                                     index: 0,
-                                    routes: [{ name: 'Login' }],
+                                    routes: [{name: 'Login'}],
                                 });
                             }
-                        }catch (e) {
+                        } catch (e) {
                             console.log(e.message);
-                        }finally {
+                        } finally {
                             setIsLoading(false);
                             if (navigation) {
                                 navigation.replace("Login");
@@ -142,10 +153,10 @@ const ProfileScreen = ({navigation}) => {
             "Kim cương của bạn",
             "Bạn hiện có 151.250 điểm kim cương.\n\nKim cương được tích lũy khi bạn đặt vé và có thể dùng để đổi các ưu đãi hấp dẫn.",
             [
-                { text: "Đóng", style: "cancel" },
-                { 
-                    text: "Xem ưu đãi", 
-                    onPress: () => navigation.navigate("PromotionsScreen") 
+                {text: "Đóng", style: "cancel"},
+                {
+                    text: "Xem ưu đãi",
+                    onPress: () => navigation.navigate("PromotionsScreen")
                 }
             ]
         );
@@ -156,10 +167,10 @@ const ProfileScreen = ({navigation}) => {
             "Khuyến mãi",
             "Hiện tại bạn không có mã khuyến mãi nào.\n\nHãy đặt vé thường xuyên để nhận được các mã khuyến mãi hấp dẫn!",
             [
-                { text: "Đóng", style: "cancel" },
-                { 
-                    text: "Tìm vé", 
-                    onPress: () => navigation.navigate("LocationScreen") 
+                {text: "Đóng", style: "cancel"},
+                {
+                    text: "Tìm vé",
+                    onPress: () => navigation.navigate("LocationScreen")
                 }
             ]
         );
@@ -167,21 +178,21 @@ const ProfileScreen = ({navigation}) => {
 
     const handleOpenReferral = () => {
         const referralCode = "SV" + userData.phone?.substring(userData.phone.length - 6) || "SV123456";
-        
+
         Alert.alert(
             "Giới thiệu bạn bè",
             `Mã giới thiệu của bạn: ${referralCode}\n\nMỗi khi bạn bè đăng ký và nhập mã này, cả hai sẽ nhận được 10.000 điểm kim cương!`,
             [
-                { text: "Đóng", style: "cancel" },
-                { 
-                    text: "Sao chép mã", 
+                {text: "Đóng", style: "cancel"},
+                {
+                    text: "Sao chép mã",
                     onPress: () => {
                         showCustomToast("Đã sao chép mã giới thiệu!", "success");
                     }
                 },
-                { 
-                    text: "Chia sẻ", 
-                    onPress: () => handleShareReferral(referralCode) 
+                {
+                    text: "Chia sẻ",
+                    onPress: () => handleShareReferral(referralCode)
                 }
             ]
         );
@@ -197,51 +208,57 @@ const ProfileScreen = ({navigation}) => {
         }
     }
 
+    console.log(discount)
+
     const handleOpenNews = () => {
         navigation.navigate("NewsScreen");
     }
 
-
-    const userInfo = {
-        name: "Lưu Phúc Ân",
-        phone: "0398653926",
-        points: "151.250 điểm",
-    };
+    const getRank = (points) => {
+        if (points < 50000) {
+            return "Bạc";
+        } else if (50000 <= points && points < 100000) {
+            return "Vàng";
+        } else {
+            return "Kim Cương";
+        }
+    }
 
     const menuItems = [
         {
-            id: "info", 
-            title: "Thông tin Sao Việt", 
-            icon: "info", 
-            color: "#4A90E2", 
-            clickBtn: handleOpenAboutInfo, 
+            id: "info",
+            title: "Thông tin Sao Việt",
+            icon: "info",
+            color: "#4A90E2",
+            clickBtn: handleOpenAboutInfo,
             loadingBtn: false
         },
         {
-            id: "support", 
-            title: "Hỗ trợ", 
-            icon: "help", 
-            color: "#50E3C2", 
-            clickBtn: handleOpenSupport, 
+            id: "support",
+            title: "Hỗ trợ",
+            icon: "help",
+            color: "#50E3C2",
+            clickBtn: handleOpenSupport,
             loadingBtn: false
         },
         {
-            id: "settings", 
-            title: "Cài đặt", 
-            icon: "settings", 
-            color: "#F5A623", 
-            clickBtn: handleOpenSettings, 
+            id: "settings",
+            title: "Cài đặt",
+            icon: "settings",
+            color: "#F5A623",
+            clickBtn: handleOpenSettings,
             loadingBtn: false
         },
         {
-            id: "logout", 
-            title: "Đăng xuất", 
-            icon: "logout", 
-            color: "#FF5B5B", 
-            clickBtn: handleLogOutProfile, 
+            id: "logout",
+            title: "Đăng xuất",
+            icon: "logout",
+            color: "#FF5B5B",
+            clickBtn: handleLogOutProfile,
             loadingBtn: isLoading
         },
     ];
+
 
     // Cập nhật QuickAccessItem để nhận onPress
     const QuickAccessItem = ({icon, title, value, color, onPress}) => (
@@ -286,15 +303,15 @@ const ProfileScreen = ({navigation}) => {
                     <View style={styles.quickAccessGrid}>
                         <QuickAccessItem
                             icon={<MaterialIcons name="stars" size={24} color="#FFF"/>}
-                            title="Kim cương"
-                            value={userInfo.points}
+                            title={getRank(userData?.loyaltyPoints)}
+                            value={userData?.loyaltyPoints}
                             color="#FFB236"
                             onPress={handleOpenDiamondPoints}
                         />
                         <QuickAccessItem
                             icon={<MaterialIcons name="local-offer" size={24} color="#FFF"/>}
                             title="Khuyến mãi"
-                            value="0 mã"
+                            value={discount.length}
                             color="#FF5B5B"
                             onPress={handleOpenPromotions}
                         />
@@ -343,7 +360,7 @@ const ProfileScreen = ({navigation}) => {
             </ScrollView>
 
             {/* Profile Edit Action Sheet */}
-            <ProfileEditActionSheet 
+            <ProfileEditActionSheet
                 actionSheetRef={profileActionSheetRef}
                 userData={userData}
                 onUpdateSuccess={handleUpdateProfileSuccess}

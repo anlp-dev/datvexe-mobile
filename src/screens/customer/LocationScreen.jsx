@@ -22,7 +22,11 @@ import {Button} from 'react-native-paper';
 const LocationScreen = ({navigation}) => {
     const currentDate = new Date();
     const [data, setData] = useState([]);
-    const [date, setDate] = useState(new Date());
+    const [date, setDate] = useState(() => {
+        const now = new Date();
+        now.setHours(now.getHours() + 7);
+        return now;
+    });
     const [dataLocation, setDataLocation] = useState([]);
     const actionSheetRefLocation = useRef(null);
     const actionSheetRef = useRef(null);
@@ -110,7 +114,7 @@ const LocationScreen = ({navigation}) => {
                         <Icon name="radio-button-checked" size={24} color="#000"/>
                         <View style={styles.locationTextContainer}>
                             <Text style={styles.locationText}>
-                                {locationStart ? locationStart.tenBenXe :  "Chọn điểm xuất phát"}
+                                {locationStart ? locationStart.tenBenXe : "Chọn điểm xuất phát"}
                             </Text>
                         </View>
                     </View>

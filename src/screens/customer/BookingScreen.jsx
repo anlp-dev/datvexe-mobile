@@ -39,7 +39,8 @@ const BookingScreen = ({navigation}) => {
                         showCustomToast("Error", "error");
                     }
                 } catch (e) {
-                    showCustomToast(e.message)
+                    console.log(e.message)
+                    showCustomToast(e.message, 'info')
                 }
             }
             fetchData()
