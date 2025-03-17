@@ -15,17 +15,6 @@ import {formatDate, formatTime} from "../../utils/format";
 
 const RouteDescriptionScreen = ({ route, navigation }) => {
     const { dataSchedule } = route.params || {};
-    
-    // Sample route stops - in a real app, this would come from the API
-    const routeStops = [
-        { id: 1, name: 'Bến xe Miền Đông', time: '06:00', type: 'start' },
-        { id: 2, name: 'Trạm dừng Dầu Giây', time: '07:30', type: 'stop' },
-        { id: 3, name: 'Trạm dừng Bảo Lộc', time: '10:00', type: 'stop' },
-        { id: 4, name: 'Trạm dừng Di Linh', time: '11:30', type: 'stop' },
-        { id: 5, name: 'Bến xe Đà Lạt', time: '13:00', type: 'end' },
-    ];
-
-    console.log(dataSchedule)
 
     return (
         <SafeAreaView style={styles.container}>
