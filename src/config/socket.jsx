@@ -1,5 +1,5 @@
 import io from "socket.io-client";
 
-const socket = io("https://5e48-14-248-82-147.ngrok-free.app");
+const socket = io("https://api.datvexe-manage.id.vn");
 
 export default socket;
