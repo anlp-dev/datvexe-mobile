@@ -235,10 +235,10 @@ const ProfileScreen = ({navigation}) => {
         },
         {
             id: "support",
-            title: "Hỗ trợ",
-            icon: "help",
+            title: "Chat với quản trị viên",
+            icon: "chat",
             color: "#50E3C2",
-            clickBtn: handleOpenSupport,
+            clickBtn: () => navigation.navigate("AdminChatScreen"),
             loadingBtn: false
         },
         {

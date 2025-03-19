@@ -26,6 +26,7 @@ import PickUpLocationStorage from "../screens/customer/PickUpLocationStorage";
 import SettingsScreen from "../screens/customer/SettingsScreen";
 import NewsScreen from "../screens/customer/NewsScreen";
 import NewsDetailScreen from "../screens/customer/NewsDetailScreen";
+import AdminChatScreen from "../screens/customer/AdminChatScreen";
 // Ticket Inspector Screens
 import TicketInspectorHomeScreen from "../screens/ticketOffice/TicketInspectorHomeScreen";
 import TicketInspectorTripDetailScreen from "../screens/ticketOffice/TicketInspectorTripDetailScreen";
@@ -123,6 +124,11 @@ const SCREEN_CONFIGS = [
         name: "NewsDetailScreen",
         component: NewsDetailScreen,
         options: getCommonHeaderOptions("Chi tiết tin tức")
+    },
+    {
+        name: "AdminChatScreen",
+        component: AdminChatScreen,
+        options: getCommonHeaderOptions("Chat với quản trị viên")
     },
     {
         name: "BookingSuccessScreen",
