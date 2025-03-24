@@ -1,6 +1,7 @@
 import ApiConfig from "../../api/ApiConfig";
 import {checkToken} from "../../utils/auth";
 import {jwtDecode} from "jwt-decode";
+import fetchWithAuth from "../../utils/fetchWithAuth";
 
 const userService = {
     async getNotifications(){
@@ -22,7 +23,9 @@ const userService = {
         }catch (e) {
             throw new Error(e);
         }
-    }
+    },
+    updateProfileUser: (userId, dataReq) => fetchWithAuth(`/auth/profile/${userId}`, "PUT", dataReq),
+    changePassword: (dataReq) => fetchWithAuth(`/auth/changePassword/user`, "POST", dataReq)
 }
 
 export default userService;

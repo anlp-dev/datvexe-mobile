@@ -34,11 +34,11 @@ const getTitle = (type) => {
     }
 }
 
-export const showCustomToast = (message, type = 'success') => {
+export const showCustomToast = (message, type = 'success', position = 'bottom') => {
     Toast.show({
         type: type,
         text1: getTitle(type) + message,
-        position: 'bottom',
+        position: position,
         visibilityTime: 4000,
         autoHide: true,
         topOffset: 50,

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -11,7 +11,9 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { showCustomToast } from '../../common/notifice/CustomToast';
-import authService from '../../../service/AuthService';
+import { jwtDecode } from "jwt-decode";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import UserService from "../../../service/user/UserService";
 import ActionSheet from "react-native-actions-sheet";
 
 const ProfileEditActionSheet = ({ actionSheetRef, userData, onUpdateSuccess }) => {
@@ -31,45 +33,72 @@ const ProfileEditActionSheet = ({ actionSheetRef, userData, onUpdateSuccess }) =
                 email: userData.email || '',
                 phone: userData.phone || '',
                 address: userData.address || '',
-                dateOfBirth: userData.dateOfBirth || ''
+                dateOfBirth: userData.dateOfBirth ? formatDate(userData.dateOfBirth) : ''
             });
         }
     }, [userData]);
 
+    const formatDate = (isoDate) => {
+        const date = new Date(isoDate);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+
     const handleInputChange = (field, value) => {
-        setFormData(prev => ({
-            ...prev,
-            [field]: value
-        }));
+        setFormData(prev => ({ ...prev, [field]: value }));
+
+        // Nếu là trường dateOfBirth và đã nhập đủ format DD/MM/YYYY, kiểm tra tính hợp lệ
+        if (field === 'dateOfBirth' && value.length === 10) {
+            const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+            if (dateRegex.test(value)) {
+                const [day, month, year] = value.split('/').map(Number);
+                const date = new Date(year, month - 1, day);
+                if (isNaN(date.getTime())) {
+                    showCustomToast("Ngày sinh không hợp lệ!", "error", "top");
+                }
+            } else {
+                showCustomToast("Vui lòng nhập đúng định dạng DD/MM/YYYY!", "error", "top");
+            }
+        }
     };
 
     const handleSave = async () => {
         try {
             setIsLoading(true);
-            
-            // Call the API to update the profile
-            const response = await authService.updateProfile(formData);
-            
+
+            const decode = jwtDecode(await AsyncStorage.getItem("token"));
+            const { fullname, email, phone, address, dateOfBirth } = formData;
+
+            const [day, month, year] = dateOfBirth.split('/').map(Number);
+            const formattedDate = new Date(year, month - 1, day).toISOString();
+
+            const response = await UserService.updateProfileUser(decode.userId, {
+                fullname,
+                email,
+                phone,
+                address,
+                dateOfBirth: formattedDate,
+            });
+
             if (response && response.data) {
                 setIsLoading(false);
                 onUpdateSuccess(response.data);
-                showCustomToast("Cập nhật thông tin thành công!", "success");
+                showCustomToast("Cập nhật thông tin thành công!", "success", "top");
                 actionSheetRef.current?.hide();
             } else {
                 throw new Error("Không thể cập nhật thông tin!");
             }
         } catch (error) {
             setIsLoading(false);
-            showCustomToast(error.message || "Cập nhật thông tin thất bại!", "error");
+            showCustomToast(error.message || "Cập nhật thông tin thất bại!", "error", "top");
         }
     };
 
     return (
         <ActionSheet ref={actionSheetRef} gestureEnabled={true}>
-            <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                style={{ width: '100%' }}
-            >
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ width: '100%' }}>
                 <View style={styles.headerContainer}>
                     <Text style={styles.actionSheetTitle}>Chỉnh sửa thông tin cá nhân</Text>
                     <Text style={styles.actionSheetSubtitle}>Cập nhật thông tin cá nhân của bạn</Text>
@@ -110,10 +139,9 @@ const ProfileEditActionSheet = ({ actionSheetRef, userData, onUpdateSuccess }) =
                             <TextInput
                                 style={styles.input}
                                 value={formData.phone}
-                                onChangeText={(text) => handleInputChange('phone', text)}
                                 placeholder="Nhập số điện thoại"
                                 keyboardType="phone-pad"
-                                editable={false} // Usually phone is not editable as it's often the login ID
+                                editable={false}
                             />
                         </View>
                     </View>
@@ -146,28 +174,17 @@ const ProfileEditActionSheet = ({ actionSheetRef, userData, onUpdateSuccess }) =
                 </ScrollView>
 
                 <View style={styles.actionsContainer}>
-                    <TouchableOpacity
-                        style={styles.cancelButton}
-                        onPress={() => actionSheetRef.current?.hide()}
-                        activeOpacity={0.7}
-                    >
+                    <TouchableOpacity style={styles.cancelButton} onPress={() => actionSheetRef.current?.hide()} activeOpacity={0.7}>
                         <Text style={styles.cancelButtonText}>Hủy</Text>
                     </TouchableOpacity>
-                    
+
                     <TouchableOpacity
-                        style={[
-                            styles.saveButton,
-                            isLoading && styles.saveButtonDisabled
-                        ]}
+                        style={[styles.saveButton, isLoading && styles.saveButtonDisabled]}
                         disabled={isLoading}
                         onPress={handleSave}
                         activeOpacity={0.7}
                     >
-                        {isLoading ? (
-                            <Text style={styles.saveButtonText}>Đang lưu...</Text>
-                        ) : (
-                            <Text style={styles.saveButtonText}>Lưu thay đổi</Text>
-                        )}
+                        <Text style={styles.saveButtonText}>{isLoading ? "Đang lưu..." : "Lưu thay đổi"}</Text>
                     </TouchableOpacity>
                 </View>
             </KeyboardAvoidingView>
@@ -270,4 +287,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ProfileEditActionSheet; 
+export default ProfileEditActionSheet;

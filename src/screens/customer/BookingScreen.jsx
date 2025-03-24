@@ -5,7 +5,7 @@ import {
     FlatList,
     TouchableOpacity,
     StyleSheet,
-    Alert,
+    Alert, ActivityIndicator,
 } from "react-native";
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {FontAwesome5} from "@expo/vector-icons";
@@ -22,11 +22,13 @@ import {getStatusStyle, getStatusText} from "../../utils/formatStatus";
 const BookingScreen = ({navigation}) => {
     const [tab, setTab] = useState("bookings"); // 'bookings' | 'history'
     const [dataBooking, setDataBooking] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
             const fetchData = async () => {
                 try {
+                    setLoading(true);
                     const token = await AsyncStorage.getItem("token");
                     if (!token) {
                         throw new Error("Lỗi khi lấy token");
@@ -41,6 +43,8 @@ const BookingScreen = ({navigation}) => {
                 } catch (e) {
                     console.log(e.message)
                     showCustomToast(e.message, 'info')
+                } finally {
+                    setLoading(false)
                 }
             }
             fetchData()
@@ -50,15 +54,15 @@ const BookingScreen = ({navigation}) => {
     const handlePayment = (item) => {
         try {
             navigation.navigate("PaymentScreen", {dataBooking: item});
-        }catch (e) {
+        } catch (e) {
             showCustomToast(e.message, "error");
         }
     }
 
     const handleDetailTrip = (item) => {
-        try{
+        try {
             navigation.navigate("TripDetailScreen", {data: item});
-        }catch (e) {
+        } catch (e) {
             showCustomToast(e.message, "error")
         }
     }
@@ -81,7 +85,8 @@ const BookingScreen = ({navigation}) => {
                         <Text style={styles.ticketDetail}>📍 Điểm đến: {item.dropoffLocation}</Text>
                     </View>
                     {item.status === 'pending' ? (
-                        <TouchableOpacity style={styles.payButton} activeOpacity={0.7} onPress={() => handlePayment(item)}>
+                        <TouchableOpacity style={styles.payButton} activeOpacity={0.7}
+                                          onPress={() => handlePayment(item)}>
                             <MaterialIcons name="payment" size={20} color="#fff" style={styles.payIcon}/>
                             <Text style={styles.payButtonText}>Thanh toán ngay</Text>
                         </TouchableOpacity>
@@ -94,6 +99,7 @@ const BookingScreen = ({navigation}) => {
                     </View>
                 </View>
             </TouchableOpacity>
+
         </View>
     );
 
@@ -102,12 +108,18 @@ const BookingScreen = ({navigation}) => {
             {/* Tabs */}
             <Tab tab={tab} setTab={setTab}/>
             {/* Content */}
-            <FlatList
-                data={dataBooking}
-                keyExtractor={(item) => item._id}
-                renderItem={renderItem}
-                contentContainerStyle={styles.list}
-            />
+            {loading ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#4A90E2"/>
+                    <Text style={styles.loadingText}>Đang tải dữ liệu...</Text>
+                </View>
+            ) : (
+                <FlatList
+                    data={dataBooking}
+                    keyExtractor={(item) => item._id}
+                    renderItem={renderItem}
+                    contentContainerStyle={styles.list}
+                />)}
 
             <View style={styles.footer}>
                 <TouchableOpacity style={styles.historyButton}
@@ -181,6 +193,16 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
         color: "#333",
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: '#666',
     },
     status: {
         fontSize: 14,

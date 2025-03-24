@@ -1,60 +1,56 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
-import {CarType} from "../../enums/EnumsType";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
-import { Alert } from "react-native";
-
-const transportOptions = [
-  { id: 1, title: "Xe khách", icon: "🚌" },
-  { id: 2, title: "Xe sân bay", icon: "🚐" },
-  { id: 3, title: "Hàng hoá", icon: "📦" },
-  { id: 4, title: "Đặt xe", icon: "🚗" },
-];
+import { Ionicons } from "@expo/vector-icons"; // Import icon chuyên nghiệp
 
 const TransportOptions = () => {
   const navigation = useNavigation();
-  
-  const handleOpenLocationChoide = (e) => {
-    if(CarType.XE_KHACH === e){
-      navigation.navigate("LocationScreen")
-    }else if(CarType.HANG_HOA === e){
-        navigation.navigate("PickUpLocationStorageScreen")
-    }else{
-      Alert.alert("Mục này đang trong quá trình phát triển, vui lòng quay lại sau !!!")
-    }
+
+  const handleStartTrip = () => {
+    navigation.navigate("LocationScreen");
   };
 
   return (
-    <>
-      {transportOptions.map((option) => (
-        <TouchableOpacity
-          key={option.id}
-          style={styles.transportOption}
-          onPress={(e) => handleOpenLocationChoide(option.id)}
-        >
-          <Text style={styles.transportIcon}>{option.icon}</Text>
-          <Text style={styles.transportText}>{option.title}</Text>
+      <View style={styles.container}>
+        <TouchableOpacity onPress={handleStartTrip} style={styles.button}>
+          <LinearGradient
+              colors={["#FFA07A", "#FF6347"]} // Gradient từ tone cam đào sang đỏ
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.gradient}
+          >
+            <Ionicons name="car-outline" size={30} color="#fff" style={styles.icon} />
+            <Text style={styles.text}>Bắt đầu với chuyến đi của bạn</Text>
+          </LinearGradient>
         </TouchableOpacity>
-      ))}
-    </>
+      </View>
   );
 };
 
 const styles = StyleSheet.create({
-  transportOption: {
+  container: {
     alignItems: "center",
-    borderRadius: 12,
-    elevation: 3,
-    padding: 10,
   },
-  transportIcon: {
-    fontSize: 32,
+  button: {
+    width: "100%",
+    borderRadius: 15,
+    overflow: "hidden",
+  },
+  gradient: {
+    paddingVertical: 13,
+    paddingHorizontal: 25,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+  },
+  icon: {
+    marginRight: 12,
+  },
+  text: {
+    fontSize: 18,
+    fontWeight: "bold",
     color: "#fff",
-  },
-  transportText: {
-    fontSize: 14,
-    color: "black",
-    marginTop: 8,
   },
 });
 

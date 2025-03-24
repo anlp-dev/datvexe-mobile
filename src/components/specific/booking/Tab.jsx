@@ -20,21 +20,21 @@ const Tab = ({ tab, setTab }) => {
           Xe khách
         </Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={[styles.tab, tab === "history" && styles.activeTab]}
-        onPress={() => setTab("history")}
-      >
-        <FontAwesome5
-          name="archive"
-          size={20}
-          color={tab === "history" ? "#FF6347" : "#333"}
-        />
-        <Text
-          style={[styles.tabText, tab === "history" && styles.activeTabText]}
-        >
-          Hàng hóa
-        </Text>
-      </TouchableOpacity>
+      {/*<TouchableOpacity*/}
+      {/*  style={[styles.tab, tab === "history" && styles.activeTab]}*/}
+      {/*  onPress={() => setTab("history")}*/}
+      {/*>*/}
+      {/*  <FontAwesome5*/}
+      {/*    name="archive"*/}
+      {/*    size={20}*/}
+      {/*    color={tab === "history" ? "#FF6347" : "#333"}*/}
+      {/*  />*/}
+      {/*  <Text*/}
+      {/*    style={[styles.tabText, tab === "history" && styles.activeTabText]}*/}
+      {/*  >*/}
+      {/*    Hàng hóa*/}
+      {/*  </Text>*/}
+      {/*</TouchableOpacity>*/}
     </View>
   );
 };

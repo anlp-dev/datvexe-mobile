@@ -208,7 +208,7 @@ const LoginScreen = ({ navigation }) => {
           {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
 
           {/* Forgot Password */}
-          <TouchableOpacity style={styles.forgotPasswordContainer}>
+          <TouchableOpacity style={styles.forgotPasswordContainer} onPress={() => Alert.alert("Lấy lại mật khẩu", "Vui lòng liên hệ với admin để có thể đặt lại mật khẩu")}>
             <Text style={styles.forgotPasswordText}>Quên mật khẩu?</Text>
           </TouchableOpacity>
 
@@ -234,19 +234,6 @@ const LoginScreen = ({ navigation }) => {
               </LinearGradient>
             </TouchableOpacity>
           </Animated.View>
-
-          {/* Social Login */}
-          <View style={styles.socialContainer}>
-            <Text style={styles.orText}>Hoặc đăng nhập với</Text>
-            <View style={styles.socialButtons}>
-              <TouchableOpacity style={[styles.socialButton, styles.googleButton]}>
-                <FontAwesome name="google" size={20} color="#fff" />
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.socialButton, styles.facebookButton]}>
-                <FontAwesome name="facebook" size={20} color="#fff" />
-              </TouchableOpacity>
-            </View>
-          </View>
 
           {/* Footer Links */}
           <View style={styles.footer}>

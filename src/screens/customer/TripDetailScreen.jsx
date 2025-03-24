@@ -145,7 +145,7 @@ const TripDetailScreen = ({route, navigation}) => {
                             </TouchableOpacity>
                         ) : null}
 
-                        {dataBooking.status === 'pending' || dataBooking.status === 'completed' ? (
+                        {dataBooking.status === 'pending' ? (
                             <TouchableOpacity style={styles.payButton} activeOpacity={0.7}>
                                 <MaterialIcons name="payment" size={20} color="#fff" style={styles.payIcon}/>
                                 <Text style={styles.payButtonText}>Thanh toán ngay</Text>
