@@ -8,6 +8,7 @@ import {
   StyleSheet,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import {useNavigation} from "@react-navigation/native";
 
 const popularDestinations = [
   {
@@ -41,8 +42,9 @@ const popularDestinations = [
 ];
 
 const PopularDestinations = () => {
+  const navigation = useNavigation();
   const renderDestination = ({ item }) => (
-    <TouchableOpacity style={styles.destinationCard}>
+    <TouchableOpacity style={styles.destinationCard} onPress={() => navigation.navigate("LocationScreen")}>
       <Image source={item.image} style={styles.destinationImage} />
       <View style={styles.destinationInfo}>
         <Text style={styles.destinationTitle}>{item.title}</Text>

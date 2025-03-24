@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
     View,
     Text,
@@ -8,11 +8,12 @@ import {
     TouchableOpacity,
     Alert
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import {MaterialIcons} from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { showCustomToast } from '../../components/common/notifice/CustomToast';
+import {showCustomToast} from '../../components/common/notifice/CustomToast';
+import EditPasswordActionSheet from "../../components/specific/setting/EditPasswordActionSheet";
 
-const SettingsScreen = ({ navigation }) => {
+const SettingsScreen = ({navigation}) => {
     const [settings, setSettings] = useState({
         notifications: true,
         darkMode: false,
@@ -22,6 +23,7 @@ const SettingsScreen = ({ navigation }) => {
         autoUpdate: true,
         dataUsage: false
     });
+    const changePasswordActionSheet = useRef(null);
 
     useEffect(() => {
         // Tải cài đặt từ AsyncStorage khi component mount
@@ -45,12 +47,12 @@ const SettingsScreen = ({ navigation }) => {
                 ...settings,
                 [key]: !settings[key]
             };
-            
+
             setSettings(newSettings);
-            
+
             // Lưu cài đặt mới vào AsyncStorage
             await AsyncStorage.setItem('userSettings', JSON.stringify(newSettings));
-            
+
             // Hiển thị thông báo thành công
             showCustomToast(`Đã ${newSettings[key] ? 'bật' : 'tắt'} ${getSettingLabel(key)}`, 'success');
         } catch (error) {
@@ -64,7 +66,7 @@ const SettingsScreen = ({ navigation }) => {
             notifications: 'Thông báo',
             darkMode: 'Chế độ tối',
             locationServices: 'Dịch vụ vị trí',
-            saveLoginInfo: 'Lưu thông tin đăng nhập',
+            saveLoginInfo: 'Thay đổi mật khẩu',
             biometricLogin: 'Đăng nhập sinh trắc học',
             autoUpdate: 'Tự động cập nhật',
             dataUsage: 'Tiết kiệm dữ liệu'
@@ -77,20 +79,20 @@ const SettingsScreen = ({ navigation }) => {
             'Xóa bộ nhớ cache',
             'Bạn có chắc chắn muốn xóa bộ nhớ cache? Điều này sẽ đăng xuất bạn khỏi ứng dụng.',
             [
-                { text: 'Hủy', style: 'cancel' },
-                { 
-                    text: 'Xóa', 
+                {text: 'Hủy', style: 'cancel'},
+                {
+                    text: 'Xóa',
                     style: 'destructive',
                     onPress: async () => {
                         try {
                             // Xóa tất cả dữ liệu trong AsyncStorage
                             await AsyncStorage.clear();
                             showCustomToast('Đã xóa bộ nhớ cache', 'success');
-                            
+
                             // Chuyển hướng về màn hình đăng nhập
                             navigation.reset({
                                 index: 0,
-                                routes: [{ name: 'Login' }],
+                                routes: [{name: 'Login'}],
                             });
                         } catch (error) {
                             console.error('Lỗi khi xóa cache:', error);
@@ -104,18 +106,31 @@ const SettingsScreen = ({ navigation }) => {
 
     const renderSettingItem = (key, icon, color) => (
         <View style={styles.settingItem} key={key}>
-            <View style={styles.settingLeft}>
-                <View style={[styles.iconContainer, { backgroundColor: `${color}15` }]}>
-                    <MaterialIcons name={icon} size={24} color={color} />
-                </View>
-                <Text style={styles.settingText}>{getSettingLabel(key)}</Text>
-            </View>
-            <Switch
-                value={settings[key]}
-                onValueChange={() => handleToggleSetting(key)}
-                trackColor={{ false: '#D1D5DB', true: '#4A90E2' }}
-                thumbColor={settings[key] ? '#FFFFFF' : '#FFFFFF'}
-            />
+            {key === "saveLoginInfo" ? (
+                <TouchableOpacity style={styles.settingLeft} onPress={() => changePasswordActionSheet?.current?.show()}>
+                    <View style={[styles.iconContainer, {backgroundColor: `${color}15`}]}>
+                        <MaterialIcons name={icon} size={24} color={color}/>
+                    </View>
+                    <Text style={styles.settingText}>{getSettingLabel(key)}</Text>
+                </TouchableOpacity>
+            ) : (
+                <>
+                    <View style={styles.settingLeft}>
+                        <View style={[styles.iconContainer, {backgroundColor: `${color}15`}]}>
+                            <MaterialIcons name={icon} size={24} color={color}/>
+                        </View>
+                        <Text style={styles.settingText}>{getSettingLabel(key)}</Text>
+                    </View>
+                    <Switch
+                        value={settings[key]}
+                        onValueChange={() => handleToggleSetting(key)}
+                        trackColor={{false: '#D1D5DB', true: '#4A90E2'}}
+                        thumbColor={settings[key] ? '#FFFFFF' : '#FFFFFF'}
+                    />
+                </>
+            )}
+
+
         </View>
     );
 
@@ -144,19 +159,20 @@ const SettingsScreen = ({ navigation }) => {
                 <Text style={styles.sectionTitle}>Nâng cao</Text>
                 <TouchableOpacity style={styles.actionButton} onPress={handleClearCache}>
                     <View style={styles.actionButtonContent}>
-                        <View style={[styles.iconContainer, { backgroundColor: '#EF444415' }]}>
-                            <MaterialIcons name="delete-sweep" size={24} color="#EF4444" />
+                        <View style={[styles.iconContainer, {backgroundColor: '#EF444415'}]}>
+                            <MaterialIcons name="delete-sweep" size={24} color="#EF4444"/>
                         </View>
                         <Text style={styles.actionButtonText}>Xóa bộ nhớ cache</Text>
                     </View>
-                    <MaterialIcons name="chevron-right" size={24} color="#BCC5D3" />
+                    <MaterialIcons name="chevron-right" size={24} color="#BCC5D3"/>
                 </TouchableOpacity>
             </View>
 
             <View style={styles.versionContainer}>
                 <Text style={styles.versionText}>Phiên bản 1.0.0</Text>
-                <Text style={styles.copyrightText}>© 2023 Sao Việt. Tất cả các quyền được bảo lưu.</Text>
+                <Text style={styles.copyrightText}>© 2026 Sao Việt. Tất cả các quyền được bảo lưu.</Text>
             </View>
+            <EditPasswordActionSheet actionSheetRef={changePasswordActionSheet}/>
         </ScrollView>
     );
 };
@@ -173,7 +189,7 @@ const styles = StyleSheet.create({
         marginTop: 16,
         padding: 16,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.05,
         shadowRadius: 8,
         elevation: 3,

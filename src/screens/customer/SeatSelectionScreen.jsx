@@ -57,8 +57,8 @@ const SeatSelectionScreen = ({route, navigation}) => {
     };
 
     const toggleSeat = (id) => {
-        if (selectedSeats.length > 9) {
-            showCustomToast("Bạn chỉ có thể lựa chọn tối đa 9 ghế ngồi !")
+        if (selectedSeats.length >= 7) {
+            showCustomToast("Bạn chỉ có thể lựa chọn tối đa 7 ghế ngồi !")
         } else {
             setSelectedSeats(prev => {
                 if (prev.includes(id)) {

@@ -10,7 +10,7 @@ import {
     ScrollView,
     Linking,
     Alert,
-    Share
+    Share, ActivityIndicator
 } from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
 import {LinearGradient} from "expo-linear-gradient";
@@ -21,6 +21,8 @@ import {Button} from 'react-native-paper';
 import ProfileEditActionSheet from "../../components/specific/profile/ProfileEditActionSheet";
 import BookingService from "../../service/booking/BookingService";
 import {useFocusEffect} from "@react-navigation/native";
+import UserService from "../../service/user/UserService";
+import {jwtDecode} from "jwt-decode";
 
 const ProfileScreen = ({navigation}) => {
     const [userData, setUserData] = useState({});
@@ -31,25 +33,30 @@ const ProfileScreen = ({navigation}) => {
     const settingsActionSheetRef = useRef(null);
     const pointsActionSheetRef = useRef(null);
     const [discount, setDiscount] = useState([]);
+    const [loading, setLoading] = useState(false)
 
     useFocusEffect(
         useCallback(() => {
-            const fetchData = async () => {
-                try {
-                    const res_data = await authService.getUser();
-                    if (res_data) {
-                        setUserData(res_data.data);
-                        fetchDataDiscount();
-                    } else {
-                        showCustomToast("Lấy thông tin người dùng thất bại !", "error");
-                    }
-                } catch (e) {
-                    showCustomToast(e.message, "error");
-                }
-            }
             fetchData();
         }, [])
     )
+
+    const fetchData = async () => {
+        try {
+            setLoading(true)
+            const res_data = await authService.getUser();
+            if (res_data) {
+                setUserData(res_data.data);
+                fetchDataDiscount();
+            } else {
+                showCustomToast("Lấy thông tin người dùng thất bại !", "error");
+            }
+        } catch (e) {
+            showCustomToast(e.message, "error");
+        } finally {
+            setLoading(false)
+        }
+    }
 
     const fetchDataDiscount = async () => {
         try {
@@ -66,11 +73,12 @@ const ProfileScreen = ({navigation}) => {
         profileActionSheetRef.current?.show();
     }
 
-    const handleUpdateProfileSuccess = (updatedData) => {
-        setUserData(prev => ({
-            ...prev,
-            ...updatedData
-        }));
+    const handleUpdateProfileSuccess = async (updatedData) => {
+        try {
+            fetchData();
+        } catch (e) {
+            console.log(e.message)
+        }
     }
 
     const handleOpenAboutInfo = () => {
@@ -277,87 +285,95 @@ const ProfileScreen = ({navigation}) => {
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content"/>
-            <ScrollView>
-                {/* User Profile Section */}
-                <View style={styles.profileContainer}>
-                    <TouchableOpacity style={styles.profileSection} onPress={handleOpenEditProfile}>
-                        <View style={styles.profileLeft}>
-                            <View style={styles.avatarContainer}>
-                                <MaterialIcons
-                                    name="account-circle"
-                                    size={50}
-                                    color="#4A90E2"
-                                />
-                            </View>
-                            <View style={styles.profileInfo}>
-                                <Text style={styles.userName}>{userData.fullname}</Text>
-                                <Text style={styles.userPhone}>{userData.phone}</Text>
-                            </View>
-                        </View>
-                        <MaterialIcons name="edit" size={24} color="#4A90E2"/>
-                    </TouchableOpacity>
+            {loading ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#4A90E2"/>
+                    <Text style={styles.loadingText}>Đang tải dữ liệu...</Text>
                 </View>
-
-                {/* Quick Access Grid */}
-                <View style={styles.quickAccessContainer}>
-                    <View style={styles.quickAccessGrid}>
-                        <QuickAccessItem
-                            icon={<MaterialIcons name="stars" size={24} color="#FFF"/>}
-                            title={getRank(userData?.loyaltyPoints)}
-                            value={userData?.loyaltyPoints}
-                            color="#FFB236"
-                            onPress={handleOpenDiamondPoints}
-                        />
-                        <QuickAccessItem
-                            icon={<MaterialIcons name="local-offer" size={24} color="#FFF"/>}
-                            title="Khuyến mãi"
-                            value={discount.length}
-                            color="#FF5B5B"
-                            onPress={handleOpenPromotions}
-                        />
-                        <QuickAccessItem
-                            icon={<MaterialIcons name="group" size={24} color="#FFF"/>}
-                            title="Giới thiệu"
-                            value="Bạn bè"
-                            color="#4A90E2"
-                            onPress={handleOpenReferral}
-                        />
-                        <QuickAccessItem
-                            icon={
-                                <MaterialIcons name="notifications" size={24} color="#FFF"/>
-                            }
-                            title="Tin tức"
-                            value="Sao Việt"
-                            color="#50E3C2"
-                            onPress={handleOpenNews}
-                        />
-                    </View>
-                </View>
-
-                {/* Menu Items */}
-                <View style={styles.menuContainer}>
-                    {menuItems.map((item) => (
-                        <Button key={item.id} style={styles.menuItem} onPress={item.clickBtn} loading={item.loadingBtn}>
-                            <View style={styles.menuItemLeft}>
-                                <View
-                                    style={[
-                                        styles.menuIconContainer,
-                                        {backgroundColor: item.color + "15"},
-                                    ]}
-                                >
+            ) : (
+                <ScrollView>
+                    {/* User Profile Section */}
+                    <View style={styles.profileContainer}>
+                        <TouchableOpacity style={styles.profileSection} onPress={handleOpenEditProfile}>
+                            <View style={styles.profileLeft}>
+                                <View style={styles.avatarContainer}>
                                     <MaterialIcons
-                                        name={item.icon}
-                                        size={24}
-                                        color={item.color}
+                                        name="account-circle"
+                                        size={50}
+                                        color="#4A90E2"
                                     />
                                 </View>
-                                <Text style={styles.menuItemTitle}>{item.title}</Text>
+                                <View style={styles.profileInfo}>
+                                    <Text style={styles.userName}>{userData.fullname}</Text>
+                                    <Text style={styles.userPhone}>{userData.phone}</Text>
+                                </View>
                             </View>
-                            <MaterialIcons name="chevron-right" size={24} color="#BCC5D3"/>
-                        </Button>
-                    ))}
-                </View>
-            </ScrollView>
+                            <MaterialIcons name="edit" size={24} color="#4A90E2"/>
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Quick Access Grid */}
+                    <View style={styles.quickAccessContainer}>
+                        <View style={styles.quickAccessGrid}>
+                            <QuickAccessItem
+                                icon={<MaterialIcons name="stars" size={24} color="#FFF"/>}
+                                title={getRank(userData?.loyaltyPoints)}
+                                value={userData?.loyaltyPoints}
+                                color="#FFB236"
+                                onPress={handleOpenDiamondPoints}
+                            />
+                            <QuickAccessItem
+                                icon={<MaterialIcons name="local-offer" size={24} color="#FFF"/>}
+                                title="Khuyến mãi"
+                                value={discount.length}
+                                color="#FF5B5B"
+                                onPress={handleOpenPromotions}
+                            />
+                            <QuickAccessItem
+                                icon={<MaterialIcons name="group" size={24} color="#FFF"/>}
+                                title="Giới thiệu"
+                                value="Bạn bè"
+                                color="#4A90E2"
+                                onPress={handleOpenReferral}
+                            />
+                            <QuickAccessItem
+                                icon={
+                                    <MaterialIcons name="notifications" size={24} color="#FFF"/>
+                                }
+                                title="Tin tức"
+                                value="Sao Việt"
+                                color="#50E3C2"
+                                onPress={handleOpenNews}
+                            />
+                        </View>
+                    </View>
+
+                    {/* Menu Items */}
+                    <View style={styles.menuContainer}>
+                        {menuItems.map((item) => (
+                            <Button key={item.id} style={styles.menuItem} onPress={item.clickBtn}
+                                    loading={item.loadingBtn}>
+                                <View style={styles.menuItemLeft}>
+                                    <View
+                                        style={[
+                                            styles.menuIconContainer,
+                                            {backgroundColor: item.color + "15"},
+                                        ]}
+                                    >
+                                        <MaterialIcons
+                                            name={item.icon}
+                                            size={24}
+                                            color={item.color}
+                                        />
+                                    </View>
+                                    <Text style={styles.menuItemTitle}>{item.title}</Text>
+                                </View>
+                                <MaterialIcons name="chevron-right" size={24} color="#BCC5D3"/>
+                            </Button>
+                        ))}
+                    </View>
+                </ScrollView>
+            )}
 
             {/* Profile Edit Action Sheet */}
             <ProfileEditActionSheet
@@ -408,6 +424,16 @@ const styles = StyleSheet.create({
         backgroundColor: "#F0F7FF",
         borderRadius: 25,
         padding: 5,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: '#666',
     },
     profileInfo: {
         marginLeft: 16,

@@ -71,30 +71,6 @@ const AuthService = {
             throw new Error(e);
         }
     },
-    async updateProfile(profileData) {
-        try {
-            const token = await AsyncStorage.getItem("token");
-            if (!token) {
-                throw new Error("Lỗi khi lấy token");
-            }
-            const tokenDecode = jwtDecode(token);
-            const res = await fetch(`${apiConfig.baseUrl}/auth/profile/${tokenDecode.userId}/update`, {
-                method: "PUT",
-                headers: {
-                    ...apiConfig.getAuthHeaders(token),
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(profileData)
-            });
-            const data = await res.json();
-            if (!res.ok) {
-                throw new Error(data.message || "Lỗi khi cập nhật thông tin!!!");
-            }
-            return data;
-        } catch (e) {
-            throw new Error(e.message || e);
-        }
-    }
 }
 
 export default AuthService;

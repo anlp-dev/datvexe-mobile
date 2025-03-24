@@ -29,48 +29,6 @@ const HistoryScreen = ({route, navigation}) => {
     const [bookingHistoryData, setBookingHistoryData] = useState([]);
 
     // Dữ liệu giả cho lịch sử đặt vé
-    const bookingHistory = [
-        {
-            id: '1',
-            bookingId: 'BK-12345',
-            transportCompany: 'Phương Trang',
-            departureTime: '08:30 - 15/06/2023',
-            totalSeats: '2 ghế (A12, A13)',
-            totalPrice: '350.000đ',
-            status: 'completed',
-            route: 'Sài Gòn → Đà Lạt'
-        },
-        {
-            id: '2',
-            bookingId: 'BK-23456',
-            transportCompany: 'Hải Vân',
-            departureTime: '06:15 - 22/07/2023',
-            totalSeats: '1 ghế (B05)',
-            totalPrice: '420.000đ',
-            status: 'cancelled',
-            route: 'Hà Nội → Sapa'
-        },
-        {
-            id: '3',
-            bookingId: 'BK-34567',
-            transportCompany: 'Mai Linh',
-            departureTime: '14:45 - 03/08/2023',
-            totalSeats: '1 ghế (C21)',
-            totalPrice: '180.000đ',
-            status: 'completed',
-            route: 'Đà Nẵng → Huế'
-        },
-        {
-            id: '4',
-            bookingId: 'BK-45678',
-            transportCompany: 'Thành Bưởi',
-            departureTime: '10:30 - 10/09/2023',
-            totalSeats: '1 ghế (D07)',
-            totalPrice: '220.000đ',
-            status: 'cancelled',
-            route: 'Nha Trang → Đà Lạt'
-        },
-    ];
     useFocusEffect(
         useCallback(() => {
             fetchData();

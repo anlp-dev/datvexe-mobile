@@ -21,6 +21,7 @@ import {Button} from 'react-native-paper';
 
 const LocationScreen = ({navigation}) => {
     const currentDate = new Date();
+    currentDate.setHours(currentDate.getHours() + 7);
     const [data, setData] = useState([]);
     const [date, setDate] = useState(() => {
         const now = new Date();
@@ -85,6 +86,7 @@ const LocationScreen = ({navigation}) => {
         try {
             const benXeKhoiHanh = locationStart.maBenXe;
             const benXeDichDen = locationEnd.maBenXe;
+            console.log(date)
             const dataReq = {benXeKhoiHanh, benXeDichDen, date, passengerCnt};
             const resData = await TripService.loadSchedule(dataReq);
             if (resData.status === 200) {
